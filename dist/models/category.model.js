@@ -32,23 +32,12 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const body_parser_1 = __importDefault(require("body-parser"));
-const cors_1 = __importDefault(require("cors"));
-const database = __importStar(require("./config/database"));
-const index_route_1 = __importDefault(require("./api/v1/routes/index.route"));
-dotenv_1.default.config();
-database.connect();
-const app = (0, express_1.default)();
-const port = process.env.PORT || 3000;
-app.use(body_parser_1.default.json());
-app.use((0, cors_1.default)());
-(0, index_route_1.default)(app);
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+const mongoose_1 = __importStar(require("mongoose"));
+const CategorySchema = new mongoose_1.Schema({
+    title: { type: String, required: true },
+}, {
+    timestamps: true
 });
+const Category = mongoose_1.default.model("Category", CategorySchema, "category");
+exports.default = Category;
