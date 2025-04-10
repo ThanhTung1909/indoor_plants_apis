@@ -11,7 +11,7 @@ interface RequestWithUser extends Request {
 
 export const index = async(req: RequestWithUser, res: Response) => {
     try {
-        const plants = await Plant.find()
+        const plants = await Plant.find();
 
         res.status(200).json({
             success: true,
