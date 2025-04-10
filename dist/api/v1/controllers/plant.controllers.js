@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPlantsByLimit = exports.getCategories = exports.getPlantDetail = exports.getPlantsByCategory = exports.addPlant = exports.index = void 0;
+exports.plantsFilter = exports.getPlantsByLimit = exports.getCategories = exports.getPlantDetail = exports.getPlantsByCategory = exports.addPlant = exports.index = void 0;
 const plant_model_1 = __importDefault(require("../../../models/plant.model"));
 const category_model_1 = __importDefault(require("../../../models/category.model"));
+const inspector_1 = require("inspector");
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const plants = yield plant_model_1.default.find();
@@ -134,3 +135,30 @@ const getPlantsByLimit = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getPlantsByLimit = getPlantsByLimit;
+const plantsFilter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const filter = req.body;
+        inspector_1.console.log(filter);
+        const { category, sort } = filter;
+        const [key, value] = sort.split("-");
+        const find = {};
+        const sortVa = {};
+        if (category) {
+            find['category'] = category;
+        }
+        if (key !== "" && value !== "") {
+            sortVa[key] = value;
+        }
+        const data = yield plant_model_1.default.find(find).sort(sortVa);
+        res.status(201).json({
+            success: true,
+            data: data,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+        });
+    }
+});
+exports.plantsFilter = plantsFilter;

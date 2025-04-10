@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Plant from "../../../models/plant.model"
 import Category from '../../../models/category.model';
+import { console } from 'inspector';
 
 
 // [GET] /api/v1/plants
@@ -138,4 +139,39 @@ export const getPlantsByLimit = async(req: Request, res: Response) => {
             error: error.message,
         })
     }
+}
+
+// [POST] /api/v1/plants/filter
+export const plantsFilter = async(req: Request, res: Response) => {
+    try {
+        const filter = req.body;
+
+        console.log(filter)
+
+        const { category,sort} = filter
+
+        const [key, value] = sort.split("-");
+        const find = {};
+        const sortVa = {};
+
+        if (category) {
+            find['category'] = category;
+        }
+        if(key !== "" && value !== "") {
+            sortVa[key] = value;
+        }
+
+        const data = await Plant.find(find).sort(sortVa);
+
+    
+        res.status(201).json({
+            success: true,
+            data : data,
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+        });
+    }
+
 }

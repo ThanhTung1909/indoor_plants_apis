@@ -31,7 +31,7 @@
           "https://mowgarden.com/wp-content/uploads/2023/03/cay-phu-quy-chau-su-tho-cam-mow-garden-01-125x125.jpg"
       ],
       "price": 320000,
-      "discount": "0%",
+      "discount": 10,
       "specifications": {
           "height": "50 cm",
           "pot_size": "Chậu 20x20 cm",
@@ -71,7 +71,7 @@
           "https://mowgarden.com/wp-content/uploads/2023/03/1-cay-trau-ba-de-vuong-vang-chau-su-2-125x125.jpg"
       ],
       "price": 180000,
-      "discount": "0%",
+      "discount": 20,
       "specifications": {
           "height": "20 đến 30 cm",
           "pot_size": "Chậu sứ họa tiết",
@@ -111,7 +111,7 @@
           "https://mowgarden.com/wp-content/uploads/2021/04/cay-hoang-hau-mowgarden-01-125x125.jpg"
       ],
       "price": 270000,
-      "discount": "11%",
+      "discount": 20,
       "specifications": {
           "height": "20 đến 30 cm",
           "pot_size": "Chậu sứ họa tiết",
@@ -151,7 +151,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/08/cay-trau-ba-thien-nga-chau-su-2-125x125.jpg"
       ],
       "price": 420000,
-      "discount": "0%",
+      "discount": 20,
       "specifications": {
           "height": "20 đến 30 cm",
           "pot_size": "Chậu sứ họa tiết",
@@ -191,7 +191,7 @@
           "https://mowgarden.com/wp-content/uploads/2023/01/cay-trau-ba-nam-my-monstera-2-125x125.jpg"
       ],
       "price": 2200000,
-      "discount": "16%",
+      "discount": 20,
       "specifications": {
           "height": "100 đến 150 cm",
           "pot_size": "Chậu lớn, sứ họa tiết",
@@ -231,7 +231,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/08/trau-ba-thanh-xuan-chau-su-trang-2-125x125.jpg"
       ],
       "price": 650000,
-      "discount": "0%",
+      "discount": 40,
       "specifications": {
           "height": "100 đến 150 cm",
           "pot_size": "Chậu sứ trắng, kích thước lớn",
@@ -272,7 +272,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/10/trau-ba-ty-phu-philodendron-burle-marx-var-125x125.jpg"
       ],
       "price": 650000,
-      "discount": "0%",
+      "discount": 30,
       "specifications": {
           "height": "30 đến 60 cm",
           "pot_size": "Chậu sứ trắng, kích thước vừa",
@@ -311,7 +311,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/08/Philodendron-Splendid-800x800.jpg"
       ],
       "price": 3850000,
-      "discount": "0%",
+      "discount": 50,
       "specifications": {
           "height": "30 đến 60 cm",
           "pot_size": "Chậu xi măng, kích thước vừa",
@@ -351,7 +351,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/08/cay-truc-bach-hop-ctbh002b-1-125x125.jpg"
       ],
       "price": 950000,
-      "discount": "0%",
+      "discount": 20,
       "specifications": {
           "height": "30 đến 60 cm",
           "pot_size": "Chậu xi măng, kích thước vừa",
@@ -391,7 +391,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/08/cay-trau-ba-leo-cot-chau-da-mai-2-125x125.jpg"
       ],
       "price": 1050000,
-      "discount": "0%",
+      "discount": 20,
       "specifications": {
           "height": "30 đến 60 cm",
           "pot_size": "Chậu xi măng, kích thước vừa",
@@ -434,7 +434,7 @@
           "https://mowgarden.com/wp-content/uploads/2021/04/cay-trau-ba-de-vuong-thuy-sinh-4-125x125.jpg"
       ],
       "price": 320000,
-      "discount": "0%",
+      "discount": 60,
       "specifications": {
           "height": "15 đến 25 cm",
           "difficulty": "Rất dễ chăm sóc",
@@ -473,7 +473,7 @@
           "https://mowgarden.com/wp-content/uploads/2023/03/cay-phat-tai-vien-vang-2-125x125.jpg"
       ],
       "price": 220000,
-      "discount": "0%",
+      "discount": 50,
       "specifications": {
           "height": "15 đến 25 cm",
           "difficulty": "Rất dễ chăm sóc",
@@ -512,7 +512,7 @@
           "https://mowgarden.com/wp-content/uploads/2022/10/luoi-ho-thai-xanh-mini-thuy-sinh-125x125.jpg"
       ],
       "price": 220000,
-      "discount": "0%",
+      "discount": 70,
       "specifications": {
           "height": "15 đến 25 cm",
           "difficulty": "Rất dễ chăm sóc",
