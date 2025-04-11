@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Plant from "../../../models/plant.model"
 import Category from '../../../models/category.model';
 import { console } from 'inspector';
-
+import paginationHelper from "../../../helper/pagination.helpler";
 
 // [GET] /api/v1/plants
 
@@ -141,16 +141,15 @@ export const getPlantsByLimit = async(req: Request, res: Response) => {
     }
 }
 
-// [POST] /api/v1/plants/filter
+// [GET] /api/v1/plants/filter/:page/:category/:sort
 export const plantsFilter = async(req: Request, res: Response) => {
     try {
-        const filter = req.body;
+        const currentLimit = 8;
 
-        console.log(filter)
 
-        const { category,sort} = filter
-
-        const [key, value] = sort.split("-");
+        const { page, category,sort } = req.query;
+   
+        const [key, value] = typeof sort === 'string' ? sort.split("-") : ["", ""];
         const find = {};
         const sortVa = {};
 
@@ -161,12 +160,18 @@ export const plantsFilter = async(req: Request, res: Response) => {
             sortVa[key] = value;
         }
 
-        const data = await Plant.find(find).sort(sortVa);
+
+        const data = await Plant.find(find);
+
+        const pagination = paginationHelper(parseInt(page as string), currentLimit, data.length);
+
+        const plants = await Plant.find(find).sort(sortVa).skip(pagination.skip).limit(currentLimit);
 
     
         res.status(201).json({
             success: true,
-            data : data,
+            data : plants,
+            pagination : pagination
         })
     } catch (error) {
         res.status(500).json({

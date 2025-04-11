@@ -6,7 +6,7 @@ const router: Router = Router()
 router.get("/", controller.index);
 router.get("/limit/:limit", controller.getPlantsByLimit)
 
-router.post("/filter", controller.plantsFilter)
+router.get("/filter", controller.plantsFilter)
 
 
 router.post("/add", controller.addPlant)
