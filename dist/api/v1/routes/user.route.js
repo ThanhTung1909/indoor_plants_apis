@@ -33,20 +33,11 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const UserSchema = new mongoose_1.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    token: { type: String, required: true },
-    avatar: { type: String },
-    myFavouriteTree: { type: [String] },
-    address: { type: [String] },
-    phone: { type: String },
-    role: { type: String, default: "user" },
-    status: { type: String, default: "active" },
-}, {
-    timestamps: true
-});
-const User = mongoose_1.default.model("User", UserSchema, "user");
-exports.default = User;
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const controller = __importStar(require("../controllers/user.controllers"));
+const router = (0, express_1.Router)();
+router.get("/myFavourite/:userId", controller.myFavourite);
+router.post("/myFavourite/addFavouriteTree", controller.addFavouriteTree);
+router.post("/myFavourite/deleteFavouriteTree", controller.deleteFavouriteTree);
+exports.userRoutes = router;
