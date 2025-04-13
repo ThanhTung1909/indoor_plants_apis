@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../../../models/user.model';
 import Plans from '../../../models/plant.model';
 import paginationHelper from "../../../helper/pagination.helpler";
+import mongoose from "mongoose";
 
 // [GET] /api/v1/users/myFavourite
 
@@ -147,52 +148,68 @@ export const deleteFavouriteTree = async (req: RequestWithUser, res: Response) =
 
 export const myFavouriteFilter = async (req: RequestWithUser, res: Response) => {
     try {
-        const userId : String = req.params.userId;
-        const user = await User.findOne({ id: userId }).select("myFavouriteTree") as { myFavouriteTree: string[] };
-        let data = [];
-        if (user && user.myFavouriteTree) {
-            const currentLimit = 8;
+        const userId : string = req.params.userId;
+        const user = await User.findById(userId).select("myFavouriteTree") as { myFavouriteTree?: string[] };
+
+        // if (!user || !(user.myFavouriteTree && user.myFavouriteTree.length)) {
+        //     return res.status(200).json({
+        //         success: true,
+        //         data: [],
+        //         userId : userId,
+        //         pagination: { page: 1, total: 0, totalPage: 0, limit: 8 },
+        //     });
+        // }
+
+        const objectIds = user.myFavouriteTree.map(id => new mongoose.Types.ObjectId(id));
+
+        const currentLimit = 8;
+        const { page = 1, category, sort } = req.query;
+        const [key, value] = typeof sort === 'string' ? sort.split("-") : ["", ""];
+        const find: any = {};
+        const sortVa: any = {};
 
 
-            const { page, category, sort } = req.query;
-
-            const [key, value] = typeof sort === 'string' ? sort.split("-") : ["", ""];
-            const find = {};
-            const sortVa = {};
-
-            if (category) {
-                find['category'] = category;
-            }
-            if (key !== "" && value !== "") {
-                sortVa[key] = value;
-            }
+        console.log(req.query);
 
 
-            data = await Plans.find({ id: { $in: user.myFavouriteTree } });
+        console.log("category", category);
+        console.log("sort", sort);
 
 
-            const pagination = paginationHelper(parseInt(page as string), currentLimit, data.length);
+        
 
-            const result = await Plans.find({ id: { $in: user.myFavouriteTree }, ...find })
+        if (category) {
+            find['category'] = category;
+        }
+        if (key && value) {
+            sortVa[key] = value === "asc" ? 1 : -1; // Chuẩn hóa sort
+        }
+
+        const data = await Plans.find({ _id: { $in: objectIds }, ...find});
+        const pagination = paginationHelper(parseInt(page as string), currentLimit, data.length);
+
+        const result = await Plans.find({...find ,_id: { $in: objectIds }})
             .sort(sortVa)
             .skip(pagination.skip)
             .limit(currentLimit);
 
-            res.status(200).json({
-                success: true,
-                data: result,
-                pagination: pagination
-            })
-        }
+        console.log(find);
+        console.log(sortVa);
+        console.log(pagination);
 
+
+
+        res.status(200).json({
+            success: true,
+            data: result,
+            pagination,
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
             message: "Lỗi khi lấy danh sách cây",
             error: error.message,
-        })
+        });
     }
-
-}
-
+};
 

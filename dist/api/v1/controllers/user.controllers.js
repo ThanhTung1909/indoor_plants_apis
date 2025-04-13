@@ -16,6 +16,7 @@ exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTr
 const user_model_1 = __importDefault(require("../../../models/user.model"));
 const plant_model_1 = __importDefault(require("../../../models/plant.model"));
 const pagination_helpler_1 = __importDefault(require("../../../helper/pagination.helpler"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.params.token;
@@ -139,32 +140,36 @@ exports.deleteFavouriteTree = deleteFavouriteTree;
 const myFavouriteFilter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.userId;
-        const user = yield user_model_1.default.findOne({ id: userId }).select("myFavouriteTree");
-        let data = [];
-        if (user && user.myFavouriteTree) {
-            const currentLimit = 8;
-            const { page, category, sort } = req.query;
-            const [key, value] = typeof sort === 'string' ? sort.split("-") : ["", ""];
-            const find = {};
-            const sortVa = {};
-            if (category) {
-                find['category'] = category;
-            }
-            if (key !== "" && value !== "") {
-                sortVa[key] = value;
-            }
-            data = yield plant_model_1.default.find({ id: { $in: user.myFavouriteTree } });
-            const pagination = (0, pagination_helpler_1.default)(parseInt(page), currentLimit, data.length);
-            const result = yield plant_model_1.default.find(Object.assign({ id: { $in: user.myFavouriteTree } }, find))
-                .sort(sortVa)
-                .skip(pagination.skip)
-                .limit(currentLimit);
-            res.status(200).json({
-                success: true,
-                data: result,
-                pagination: pagination
-            });
+        const user = yield user_model_1.default.findById(userId).select("myFavouriteTree");
+        const objectIds = user.myFavouriteTree.map(id => new mongoose_1.default.Types.ObjectId(id));
+        const currentLimit = 8;
+        const { page = 1, category, sort } = req.query;
+        const [key, value] = typeof sort === 'string' ? sort.split("-") : ["", ""];
+        const find = {};
+        const sortVa = {};
+        console.log(req.query);
+        console.log("category", category);
+        console.log("sort", sort);
+        if (category) {
+            find['category'] = category;
         }
+        if (key && value) {
+            sortVa[key] = value === "asc" ? 1 : -1;
+        }
+        const data = yield plant_model_1.default.find(Object.assign({ _id: { $in: objectIds } }, find));
+        const pagination = (0, pagination_helpler_1.default)(parseInt(page), currentLimit, data.length);
+        const result = yield plant_model_1.default.find(Object.assign(Object.assign({}, find), { _id: { $in: objectIds } }))
+            .sort(sortVa)
+            .skip(pagination.skip)
+            .limit(currentLimit);
+        console.log(find);
+        console.log(sortVa);
+        console.log(pagination);
+        res.status(200).json({
+            success: true,
+            data: result,
+            pagination,
+        });
     }
     catch (error) {
         res.status(500).json({
