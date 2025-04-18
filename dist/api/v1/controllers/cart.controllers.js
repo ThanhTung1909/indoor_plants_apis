@@ -56,8 +56,7 @@ const addToCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             return res.status(200).json({ success: true, data: newCart });
         }
-        const productIndex = cart.myCart.findIndex(item => item.productId._id.toString() === productId);
-        console.log("Index" + productIndex);
+        const productIndex = cart.myCart.findIndex(item => item.productId.toString() === productId);
         if (productIndex > -1) {
             cart.myCart[productIndex].quantity += quantity;
             cart.myCart[productIndex].totalPrice = Number(product.price) * cart.myCart[productIndex].quantity;
@@ -83,7 +82,7 @@ const removeFromCart = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (!cart) {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
-        const productIndex = cart.myCart.findIndex((item) => item.productId.toString() === productId.toString());
+        const productIndex = cart.myCart.findIndex(item => item.productId.toString() === productId);
         if (productIndex === -1) {
             return res.status(404).json({ success: false, message: 'Product not in cart' });
         }
