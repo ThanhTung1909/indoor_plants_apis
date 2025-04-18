@@ -6,19 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const fs_1 = __importDefault(require("fs"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const plant_model_1 = __importDefault(require("../models/plant.model"));
+const user_model_1 = __importDefault(require("../models/user.model"));
 dotenv_1.default.config();
-mongoose_1.default.connect(process.env.MONGO_URL)
+mongoose_1.default.connect("mongodb+srv://ttung2827:nFFSj2tmG4LaQ2hO@cluster0.fgdu89k.mongodb.net/indoor_plants_apis")
     .then(() => console.log("Connected"))
     .catch(err => console.error(err));
-const rawData = fs_1.default.readFileSync("./data.json", "utf-8");
-const jsonData = JSON.parse(rawData);
-plant_model_1.default.insertMany(jsonData)
+const userDataRaw = fs_1.default.readFileSync("./dataUser.json", "utf-8");
+const userData = JSON.parse(userDataRaw);
+user_model_1.default.insertMany(userData)
     .then(() => {
-    console.log("Add Plant Successfully");
+    console.log("Add User Successfully");
     mongoose_1.default.disconnect();
 })
     .catch((err) => {
-    console.error("Add Plant Fail", err);
+    console.error("Add User Fail", err);
     mongoose_1.default.disconnect();
 });

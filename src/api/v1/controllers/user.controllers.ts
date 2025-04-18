@@ -6,6 +6,34 @@ import Plans from '../../../models/plant.model';
 interface RequestWithUser extends Request {
   user?: any; // Adjust the type of 'user' as needed
 }
+export const getUser = async(req: RequestWithUser, res: Response) => {
+    try {
+        const token: string = req.params.token; 
+
+        // Tìm kiếm người dùng theo token
+        const user = await User.findOne({ token: token }).select("-password"); // Không lấy password
+            console.log(user);
+        // Nếu không tìm thấy người dùng
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Không tìm thấy người dùng",
+            });
+        }
+
+        // Trả về thông tin người dùng
+        res.status(200).json({
+            success: true,
+            data: user,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi khi lấy thông tin người dùng",
+            error: error.message,
+        });
+    }
+};
 
 export const myFavourite = async(req: RequestWithUser, res: Response) => {
     try {

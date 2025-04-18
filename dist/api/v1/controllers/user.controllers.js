@@ -12,9 +12,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = void 0;
+exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = void 0;
 const user_model_1 = __importDefault(require("../../../models/user.model"));
 const plant_model_1 = __importDefault(require("../../../models/plant.model"));
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = req.params.token;
+        const user = yield user_model_1.default.findOne({ token: token }).select("-password");
+        console.log(user);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Không tìm thấy người dùng",
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: user,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi khi lấy thông tin người dùng",
+            error: error.message,
+        });
+    }
+});
+exports.getUser = getUser;
 const myFavourite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.params.token;
