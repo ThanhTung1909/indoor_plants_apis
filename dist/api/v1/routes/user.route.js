@@ -40,5 +40,7 @@ const router = (0, express_1.Router)();
 router.get("/myFavourite", controller.myFavourite);
 router.post("/myFavourite/addFavouriteTree", controller.addFavouriteTree);
 router.post("/myFavourite/deleteFavouriteTree", controller.deleteFavouriteTree);
+router.get("/:token", controller.getUser);
+router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
 router.get("/profile", controller.getUser);
 exports.userRoutes = router;

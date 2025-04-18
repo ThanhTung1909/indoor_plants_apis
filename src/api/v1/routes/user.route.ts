@@ -10,7 +10,13 @@ router.get("/myFavourite",  controller.myFavourite);
 router.post("/myFavourite/addFavouriteTree",  controller.addFavouriteTree);
 
 // Xóa cây khỏi danh sách yêu thích
+
 router.post("/myFavourite/deleteFavouriteTree",  controller.deleteFavouriteTree);
+// Lay user
+router.get("/:token", controller.getUser);
+
+// Loc danh sach yeu thich 
+router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
 
 // Lấy thông tin profile của người dùng hiện tại (dùng middleware authenticateJWT để xác thực người dùng)
 router.get("/profile", controller.getUser);

@@ -77,7 +77,7 @@ export const getPlantDetail = async(req: Request, res: Response) => {
     try {
         const { sku } = req.params
 
-        const plant = await Plant.find({sku: sku})
+        const plant = await Plant.findOne({sku: sku})
 
         res.status(201).json({
             success: true,

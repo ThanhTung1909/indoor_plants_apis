@@ -75,7 +75,7 @@ exports.getPlantsByCategory = getPlantsByCategory;
 const getPlantDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { sku } = req.params;
-        const plant = yield plant_model_1.default.find({ sku: sku });
+        const plant = yield plant_model_1.default.findOne({ sku: sku });
         res.status(201).json({
             success: true,
             message: "Get Plant SuccessFully",
