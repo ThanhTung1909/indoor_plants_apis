@@ -33,15 +33,21 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.plantRoutes = void 0;
-const express_1 = require("express");
-const controller = __importStar(require("../controllers/plant.controllers"));
-const router = (0, express_1.Router)();
-router.get("/", controller.index);
-router.get("/limit/:limit", controller.getPlantsByLimit);
-router.get("/filter", controller.plantsFilter);
-router.post("/add", controller.addPlant);
-router.get("/category/:categoryId", controller.getPlantsByCategory);
-router.get("/plant-detail/:sku", controller.getPlantDetail);
-router.get("/categories", controller.getCategories);
-exports.plantRoutes = router;
+const mongoose_1 = __importStar(require("mongoose"));
+const HistorySchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.default.Types.ObjectId, required: true },
+    myProducts: { type: [
+            {
+                productId: { type: mongoose_1.default.Types.ObjectId },
+                quantity: { type: Number, default: 1 },
+                totalPrice: { type: Number, required: true },
+            }
+        ] },
+    addressId: { type: mongoose_1.default.Types.ObjectId, required: true },
+    total: { type: Number, required: true },
+    status: { type: String, required: true, default: "pending" },
+}, {
+    timestamps: true
+});
+const History = mongoose_1.default.model("History", HistorySchema, "history");
+exports.default = History;

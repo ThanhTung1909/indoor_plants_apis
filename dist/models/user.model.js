@@ -33,15 +33,28 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.plantRoutes = void 0;
-const express_1 = require("express");
-const controller = __importStar(require("../controllers/plant.controllers"));
-const router = (0, express_1.Router)();
-router.get("/", controller.index);
-router.get("/limit/:limit", controller.getPlantsByLimit);
-router.get("/filter", controller.plantsFilter);
-router.post("/add", controller.addPlant);
-router.get("/category/:categoryId", controller.getPlantsByCategory);
-router.get("/plant-detail/:sku", controller.getPlantDetail);
-router.get("/categories", controller.getCategories);
-exports.plantRoutes = router;
+const mongoose_1 = __importStar(require("mongoose"));
+const UserSchema = new mongoose_1.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    token: { type: String, required: true },
+    avatar: { type: String },
+    myFavouriteTree: { type: [String] },
+    address: [
+        {
+            street: { type: String },
+            ward: { type: String },
+            district: { type: String },
+            city: { type: String },
+            isDefault: { type: Boolean, default: false },
+        },
+    ],
+    phone: { type: String },
+    role: { type: String, default: "user" },
+    status: { type: String, default: "active" },
+}, {
+    timestamps: true,
+});
+const User = mongoose_1.default.model("User", UserSchema, "user");
+exports.default = User;

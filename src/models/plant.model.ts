@@ -4,7 +4,7 @@ const PlantSchema: Schema = new Schema(
   {
     sku: { type: String, required: true },
     title: { type: String, required: true },
-    category: { type: mongoose.Types.ObjectId, ref: 'Category', required: true },
+    category: { type: String, required: true },
     short_description: { type: String, required: true },
     description: { type: String, required: true },
     characteristics: {

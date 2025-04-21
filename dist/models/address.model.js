@@ -33,15 +33,16 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.plantRoutes = void 0;
-const express_1 = require("express");
-const controller = __importStar(require("../controllers/plant.controllers"));
-const router = (0, express_1.Router)();
-router.get("/", controller.index);
-router.get("/limit/:limit", controller.getPlantsByLimit);
-router.get("/filter", controller.plantsFilter);
-router.post("/add", controller.addPlant);
-router.get("/category/:categoryId", controller.getPlantsByCategory);
-router.get("/plant-detail/:sku", controller.getPlantDetail);
-router.get("/categories", controller.getCategories);
-exports.plantRoutes = router;
+const mongoose_1 = __importStar(require("mongoose"));
+const AddressSchema = new mongoose_1.Schema({
+    country: { type: String, required: true, default: "Vietnam" },
+    city: { type: String, required: true },
+    district: { type: String, required: true },
+    ward: { type: String, required: true },
+    street: { type: String, required: true },
+    note: { type: String }
+}, {
+    timestamps: true
+});
+const Address = mongoose_1.default.model("Address", AddressSchema, "address");
+exports.default = Address;

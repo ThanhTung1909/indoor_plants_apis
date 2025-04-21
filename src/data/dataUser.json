@@ -1,0 +1,26 @@
+[
+  { "UserId":"125",
+    "username": "nguyenvanc",
+    "password": "hashed_password_125",
+    "email": "nguyenvanc@example.com",
+    "token": "token123abc",
+    "avatar": "https://tse3.mm.bing.net/th?id=OIP.R3-okktL0vhaQDvTrn5NGgHaHa&pid=Api&P=0&h=180",
+    "myFavouriteTree": ["67f7ef65de68b571bac55093", "C67f7ef65de68b571bac55095", "67f7ef65de68b571bac55097"],
+    "address": [
+      {
+        "street": "Số 10, Đường Nguyễn Trãi",
+        "ward": "Phường 5",
+        "district": "Quận 1",
+        "city": "Hồ Chí Minh",
+        "isDefault": true
+      }
+    ],
+    "phone": "0909123456",
+    "role": "user",
+    "status": "active",
+    "createdAt": "2024-04-10T08:30:00Z",
+    "updatedAt": "2024-04-10T08:30:00Z"
+  }
+  
+
+]
