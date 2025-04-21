@@ -6,6 +6,7 @@ const mainV1Routes = (app: Express) => {
     const version: String = "/api/v1";
 
     app.use(version + "/plants", plantRoutes);
+   
 }
 
 export default mainV1Routes
