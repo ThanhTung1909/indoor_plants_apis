@@ -4,7 +4,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 
 import * as database from "./config/database";
-import mainV1Routes from "./api/v1/routes/index.route";
+import mainV1Routes from "./api/v1/client/routes/index.route";
+import mainV1AdminRoutes from "./api/v1/admin/routes/index.routes";
 
 
 
@@ -20,6 +21,7 @@ app.use(bodyParser.json())
 app.use(cors())
 
 mainV1Routes(app);
+mainV1AdminRoutes(app)
 
 
 
