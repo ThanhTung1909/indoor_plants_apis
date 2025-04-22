@@ -4,7 +4,7 @@ import {
   addToCart,
   removeFromCart,
   updateCartQuantity,
-} from "../client/controllers/cart.controllers"; // Import các controller từ cart.controllers
+} from "../controllers/cart.controllers"; // Import các controller từ cart.controllers
 
 const router: Router = Router();
 
