@@ -1,5 +1,5 @@
 import { Router } from "express"; // Import Router từ express
-import {createOrder,getOrdersByUser,getOrderDetail,updateOrderStatus,deleteOrder} from "../controllers/order.controllers"; // Import các controller từ cart.controllers
+import {createOrder,getOrdersByUser,getOrderDetail,updateOrderStatus,deleteOrder} from "../../client/controllers/order.controllers"; 
 
 const router: Router = Router();
 

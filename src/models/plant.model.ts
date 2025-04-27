@@ -1,4 +1,45 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
+
+interface IPlant extends Document {
+  sku: string;
+  title: string;
+  category: string;
+  short_description: string;
+  description: string;
+  characteristics: {
+    scientific_name: string;
+    family: string;
+    origin: string;
+    growth_habit: string;
+    leaves: string;
+    flowers: string;
+    roots: string;
+  };
+  meaning: {
+    feng_shui: string;
+    placement: string;
+  };
+  care_instructions: {
+    watering: string;
+    lighting: string;
+    temperature: string;
+    fertilizing: string;
+    cleaning: string;
+  };
+  images: string[];
+  price: number;
+  discount: string;
+  specifications: {
+    height: string;
+    pot_size: string;
+    difficulty: string;
+    lighting_requirements: string;
+    water_needs: string;
+  };
+  stock_quantity: number;
+  import_date: Date;
+  origin_country?: string;
+}
 
 const PlantSchema: Schema = new Schema(
   {
@@ -38,9 +79,9 @@ const PlantSchema: Schema = new Schema(
       water_needs: { type: String, required: true },
     },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
-const Plant = mongoose.model("Plant", PlantSchema, "plants");
+const Plant = mongoose.model<IPlant>("Plant", PlantSchema, "plants");
 
 export default Plant;

@@ -6,7 +6,7 @@ import User from "../models/user.model";
 
 dotenv.config();
 
-mongoose.connect("mongodb+srv://ttung2827:nFFSj2tmG4LaQ2hO@cluster0.fgdu89k.mongodb.net/indoor_plants_apis")
+mongoose.connect(process.env.MONGO_URL!)
   .then(() => console.log("Connected"))
   .catch(err => console.error(err));
 

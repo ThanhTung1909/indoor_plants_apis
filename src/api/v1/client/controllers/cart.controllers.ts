@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
-import Cart from '../../../models/cart.model';
-import Product from '../../../models/plant.model';
-import User from '../../../models/user.model';
+import Cart from '../../../../models/cart.model';
+import Product from '../../../../models/plant.model';
 
 // src/types/express.d.ts
 export interface RequestWithUser extends Request {

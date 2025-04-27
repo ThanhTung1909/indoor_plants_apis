@@ -1,8 +1,8 @@
 // src/controllers/order.controllers.ts
 import { Request, Response } from 'express';
-import Order, { IOrder } from '../../../models/order.model';
-import Cart from '../../../models/cart.model';
-import Plant from '../../../models/plant.model'; // Để update tồn kho nếu cần
+import Order, { IOrder } from '../../../../models/order.model';
+import Cart from '../../../../models/cart.model';
+import Plant from '../../../../models/plant.model'; // Để update tồn kho nếu cần
 import mongoose from 'mongoose';
 
 interface RequestWithUser extends Request {
