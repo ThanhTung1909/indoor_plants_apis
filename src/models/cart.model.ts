@@ -10,13 +10,13 @@ interface CartItem {
 }
 
 export interface ICart extends Document {
-  UserId: String;
+  UserId:  Types.ObjectId;
   myCart: CartItem[];
 }
 
 const CartSchema: Schema = new Schema(
   {
-    UserId: { type: String, required: true, ref: 'User' },
+    UserId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
     myCart: [
       {
         productId: { type:  mongoose.Schema.Types.ObjectId, ref: 'Plant', required: true },

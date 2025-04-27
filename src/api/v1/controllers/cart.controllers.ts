@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import Cart from '../../../models/cart.model';
 import Product from '../../../models/plant.model';
 import User from '../../../models/user.model';
