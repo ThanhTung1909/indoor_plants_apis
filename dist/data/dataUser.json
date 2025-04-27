@@ -1,8 +1,8 @@
 [
-  { "UserId":"125",
-    "username": "nguyenvanc",
+  { "UserId":"126",
+    "username": "nguyenvand",
     "password": "hashed_password_125",
-    "email": "nguyenvanc@example.com",
+    "email": "nguyenvand@example.com",
     "token": "token123abc",
     "avatar": "https://tse3.mm.bing.net/th?id=OIP.R3-okktL0vhaQDvTrn5NGgHaHa&pid=Api&P=0&h=180",
     "myFavouriteTree": ["67f7ef65de68b571bac55093", "C67f7ef65de68b571bac55095", "67f7ef65de68b571bac55097"],

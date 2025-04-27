@@ -1,5 +1,6 @@
 import { Express } from "express";
-import { plantRoutes } from "../../plant.route";
+
+import { plantRoutes } from "./plant.route";
 import { userRoutes } from "./user.route";
 import {cartRouter} from "./cart.router"
 import { orderRouter } from "./order.router";

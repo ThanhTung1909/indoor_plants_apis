@@ -41,12 +41,20 @@ const UserSchema = new mongoose_1.Schema({
     token: { type: String, required: true },
     avatar: { type: String },
     myFavouriteTree: { type: [String] },
-    address: { type: [String] },
+    address: [
+        {
+            street: { type: String },
+            ward: { type: String },
+            district: { type: String },
+            city: { type: String },
+            isDefault: { type: Boolean, default: false },
+        },
+    ],
     phone: { type: String },
     role: { type: String, default: "user" },
     status: { type: String, default: "active" },
 }, {
-    timestamps: true
+    timestamps: true,
 });
 const User = mongoose_1.default.model("User", UserSchema, "user");
 exports.default = User;

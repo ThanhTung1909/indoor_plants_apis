@@ -1,22 +1,37 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
+import { title } from "process";
+
+// Định nghĩa interface cho từng mục trong giỏ hàng
+interface CartItem {
+  productId: Types.ObjectId | any;
+  quantity: number;
+  totalPrice: number;
+
+}
+
+export interface ICart extends Document {
+  UserId:  Types.ObjectId;
+  myCart: CartItem[];
+}
 
 const CartSchema: Schema = new Schema(
-    {
-        userId : {type : mongoose.Types.ObjectId, required: true},
-        myCart : {type : [
-           {
-            productId : {type: mongoose.Types.ObjectId},
-            quantity : {type: Number, default: 1},
-            totalPrice : {type: Number, required: true},
-           }
-            
-        ]} 
-    },
-    {
-        timestamps: true
-    }
+  {
+    UserId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+    myCart: [
+      {
+        productId: { type:  mongoose.Schema.Types.ObjectId, ref: 'Plant', required: true },
+        quantity: { type: Number, default: 1 },
+        totalPrice: { type: Number, required: true },
+       
+        
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-)
-
-const Cart = mongoose.model("Cart", CartSchema, "cart");
+// Khai báo model với kiểu ICart
+const Cart = mongoose.model<ICart>('Cart', CartSchema, 'cart');
 export default Cart;
