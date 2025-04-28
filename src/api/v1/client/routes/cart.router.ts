@@ -9,7 +9,7 @@ import {
 const router: Router = Router();
 
 // Route để lấy thông tin giỏ hàng
-router.get("/", getCart); // Xác thực token và lấy giỏ hàng
+router.post("/", getCart); // Xác thực token và lấy giỏ hàng
 
 // Route để thêm sản phẩm vào giỏ hàng
 router.post("/add", addToCart);
