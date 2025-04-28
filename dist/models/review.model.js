@@ -34,28 +34,14 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const UserSchema = new mongoose_1.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    token: { type: String, required: true },
-    avatar: { type: String },
-    myFavouriteTree: { type: [String] },
-    address: [
-        {
-            street: { type: String },
-            ward: { type: String },
-            district: { type: String },
-            city: { type: String },
-            isDefault: { type: Boolean, default: false },
-        },
-    ],
-    phone: { type: String },
-    role: { type: String, default: "user" },
-    status: { type: String, default: "active" },
-    otp: { type: String },
+const ReviewSchema = new mongoose_1.Schema({
+    user_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', require: true },
+    plant_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Plant', require: true },
+    rating: { type: Number, require: true, min: 1, max: 5 },
+    content: { type: String },
+    rating_date: { type: Date, default: Date.now }
 }, {
     timestamps: true,
 });
-const User = mongoose_1.default.model("User", UserSchema, "user");
-exports.default = User;
+const Review = mongoose_1.default.model('Review', ReviewSchema, 'review');
+exports.default = Review;

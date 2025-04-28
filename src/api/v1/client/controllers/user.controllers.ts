@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 import md5 from "md5";
 import User from "../../../../models/user.model";
 import Plans from "../../../../models/plant.model";
+import ForgotPassword from "../../../../models/forgotPassword.model";
 import * as generate from "../../../../helper/generate";
 import paginationHelper from "../../../../helper/pagination.helpler";
 import mongoose from "mongoose";
+import sendMailHelper from "../../../../helper/sendMail";
 
 // [POST] /api/v1/users/register
 export const register = async (req: Request, res: Response) => {
@@ -23,6 +25,7 @@ export const register = async (req: Request, res: Response) => {
     username: req.body.username,
     email: req.body.email,
     password: md5(req.body.password),
+    phone: req.body.phone,
     token: generate.generateRandomString(30),
   };
 
@@ -62,7 +65,9 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
+
   const token = user.token;
+  res.cookie("token", user.token);
 
   res.status(201).json({
     success: true,
@@ -70,6 +75,121 @@ export const login = async (req: Request, res: Response) => {
     token: token,
   });
 };
+
+
+
+// [POST] /api/v1/users/forgotPassword
+export const forgotPassword = async (req: Request, res: Response) => {
+  const email: string = req.body.email;
+
+  const user = await User.findOne({ email: email });
+
+  if (!user) {
+    res.status(400).json({
+      success: false,
+      message: "Email không tồn tại",
+    });
+    return;
+  }
+
+  const otp: string = generate.generateRandomNumber(8);
+
+  const forgotPassword = new ForgotPassword(
+    {
+      email: email,
+      otp: otp,
+      expireAt: Date.now()
+    }
+  );
+
+  await forgotPassword.save();
+
+  // Gửi email chứa OTP đến người dùng
+  const subject = "Mã OTP xác minh yêu cầu thay đổi mật khẩu từ Paradise Plants";
+  const html = `
+    <p>Chào bạn,</p>
+
+    <p>Để bảo mật tài khoản của bạn, Paradise Plants đã nhận được yêu cầu thay đổi mật khẩu. Mã OTP xác minh của bạn là:</p>
+
+    <h2 style="color: #4CAF50; font-weight: bold;">${otp}</h2>
+
+    <p>Vui lòng nhập mã OTP trên trong vòng 3 phút để hoàn tất việc thay đổi mật khẩu.</p>
+
+    <p>Chú ý: Mã OTP này chỉ có hiệu lực trong 3 phút và không được chia sẻ với bất kỳ ai. Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này.</p>
+
+    <p>Trân trọng,<br>Đội ngũ hỗ trợ của Paradise Plants</p>
+  `
+
+  sendMailHelper(email, subject, html);
+
+  res.status(200).json({
+    success: true,
+    message: "Email không tồn tại",
+  });
+
+  
+};
+
+// [POST] /api/v1/users/forgotPassword/otp
+export const forgotPasswordOTP = async (req: Request, res: Response) => {
+  const email : string = req.body.email;
+  const otp : string = req.body.otp;
+
+  const result = await ForgotPassword.findOne({
+    email : email,
+    otp : otp,
+  });
+
+  if(!result){
+    res.status(400).json({
+      success: false,
+      message: "Mã OTP không chính xác hoặc đã hết hạn",
+    });
+    return;
+  }
+
+  const user = await User.findOne({
+    email: email,
+  });
+
+
+
+  res.status(200).json({
+    success: true,
+    message: "Mã OTP chính xác",
+    token: user.token,
+  });
+
+}
+
+// [GET] /user/forgotPassword/reset
+export const resetPassword = async (req: Request, res: Response) => {
+  const password : string = req.body.password;
+  const token : string = req.body.tokenValue;
+
+  const result =  await User.updateOne(
+    {
+      token: token,
+    },{
+      password : md5(password),
+    }
+  );
+  if(!result){
+    res.status(400).json({
+      success: false,
+      message: "Cập nhật mật khẩu không thành công",
+    });
+    return;
+  }
+  res.status(200).json({
+    success: true,
+    message: "Cập nhật mật khẩu thành công",
+  });
+
+
+};
+
+
 
 // [GET] /api/v1/users/myFavourite
 

@@ -34,28 +34,32 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const UserSchema = new mongoose_1.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    token: { type: String, required: true },
-    avatar: { type: String },
-    myFavouriteTree: { type: [String] },
-    address: [
+const BlogSchema = new mongoose_1.Schema({
+    title: { type: String, require: true },
+    content: { type: String, require: true },
+    summary: { type: String, require: true },
+    image: { type: String },
+    posting_date: { type: Date, default: Date.now },
+    views: { type: Number, default: 0 },
+    blog_category: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "BlogCategory",
+        require: true,
+    },
+    sections: [
         {
-            street: { type: String },
-            ward: { type: String },
-            district: { type: String },
-            city: { type: String },
-            isDefault: { type: Boolean, default: false },
+            title: { type: String, require: true },
+            content: { type: String, require: true },
+            subSections: [
+                {
+                    title: { type: String, require: true },
+                    content: { type: String, require: true },
+                },
+            ],
         },
     ],
-    phone: { type: String },
-    role: { type: String, default: "user" },
-    status: { type: String, default: "active" },
-    otp: { type: String },
 }, {
     timestamps: true,
 });
-const User = mongoose_1.default.model("User", UserSchema, "user");
-exports.default = User;
+const Blog = mongoose_1.default.model("Blog", BlogSchema, "blog");
+exports.default = Blog;

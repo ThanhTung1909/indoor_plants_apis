@@ -33,29 +33,20 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const UserSchema = new mongoose_1.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    token: { type: String, required: true },
-    avatar: { type: String },
-    myFavouriteTree: { type: [String] },
-    address: [
-        {
-            street: { type: String },
-            ward: { type: String },
-            district: { type: String },
-            city: { type: String },
-            isDefault: { type: Boolean, default: false },
-        },
-    ],
-    phone: { type: String },
-    role: { type: String, default: "user" },
-    status: { type: String, default: "active" },
-    otp: { type: String },
-}, {
-    timestamps: true,
-});
-const User = mongoose_1.default.model("User", UserSchema, "user");
-exports.default = User;
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const controller = __importStar(require("../controllers/user.controllers"));
+const authMiddleware = __importStar(require("../../../../middlewares/auth.middleware"));
+const router = (0, express_1.Router)();
+router.post("/register", controller.register);
+router.post("/login", controller.login);
+router.post("/forgotPassword", controller.forgotPassword);
+router.post("/forgotPassword/otp", controller.forgotPasswordOTP);
+router.post("/forgotPassword/reset", controller.resetPassword);
+router.get("/myFavourite", authMiddleware.requireAuth, controller.myFavourite);
+router.post("/myFavourite/addFavouriteTree", authMiddleware.requireAuth, controller.addFavouriteTree);
+router.post("/myFavourite/deleteFavouriteTree", authMiddleware.requireAuth, controller.deleteFavouriteTree);
+router.get("/:token", controller.getUser);
+router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
+router.get("/profile", authMiddleware.requireAuth, controller.getUser);
+exports.userRoutes = router;
