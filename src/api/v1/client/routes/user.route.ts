@@ -10,6 +10,16 @@ router.post("/register", controller.register);
 // Đăng nhập
 router.post("/login", controller.login)
 
+// Quên mật khẩu
+router.post("/forgotPassword", controller.forgotPassword);
+
+// Nhập mã OTP
+router.post("/forgotPassword/otp", controller.forgotPasswordOTP);
+
+// Đặt lại mật khẩu
+router.post("/forgotPassword/reset", controller.resetPassword);
+
+
 // Lấy danh sách cây yêu thích của người dùng (dùng middleware authenticateJWT để xác thực người dùng)
 router.get("/myFavourite",authMiddleware.requireAuth, controller.myFavourite);
 
