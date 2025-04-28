@@ -45,15 +45,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.resetPassword = exports.forgotPasswordOTP = exports.forgotPassword = exports.login = exports.register = void 0;
+
+exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.login = exports.register = void 0;
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../../../models/user.model"));
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
-const forgotPassword_model_1 = __importDefault(require("../../../../models/forgotPassword.model"));
 const generate = __importStar(require("../../../../helper/generate"));
 const pagination_helpler_1 = __importDefault(require("../../../../helper/pagination.helpler"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const sendMail_1 = __importDefault(require("../../../../helper/sendMail"));
+
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const existEmail = yield user_model_1.default.findOne({
         email: req.body.email,
@@ -68,7 +68,9 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         username: req.body.username,
         email: req.body.email,
         password: (0, md5_1.default)(req.body.password),
+
         phone: req.body.phone,
+
         token: generate.generateRandomString(30),
     };
     const user = new user_model_1.default(inforUser);
@@ -102,7 +104,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     const token = user.token;
+
     res.cookie("token", user.token);
+
     res.status(201).json({
         success: true,
         message: "Đăng nhập thành công",
@@ -110,6 +114,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.login = login;
+
 const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const user = yield user_model_1.default.findOne({ email: email });
@@ -193,6 +198,7 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     });
 });
 exports.resetPassword = resetPassword;
+
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.params.token;
@@ -356,3 +362,66 @@ const myFavouriteFilter = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.myFavouriteFilter = myFavouriteFilter;
+
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = req.body.token;
+        const { username, email, phone, address } = req.body;
+        const user = yield user_model_1.default.findOne({ token: token });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Không tìm thấy người dùng",
+            });
+        }
+        if (email && email !== user.email) {
+            const existingUser = yield user_model_1.default.findOne({ email: email });
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email đã tồn tại",
+                });
+            }
+        }
+        if (address) {
+            const defaultAddressIndex = address.findIndex((addr) => addr.isDefault === true);
+            if (defaultAddressIndex !== -1) {
+                address.forEach((addr, index) => {
+                    if (index !== defaultAddressIndex) {
+                        addr.isDefault = false;
+                    }
+                });
+            }
+        }
+        const updatedData = {
+            username: username || user.username,
+            email: email || user.email,
+            phone: phone || user.phone,
+            address: address || user.address,
+        };
+        const updatedUser = yield user_model_1.default.findOneAndUpdate({ token: token }, updatedData, { new: true });
+        if (updatedUser) {
+            res.status(200).json({
+                success: true,
+                message: "Cập nhật thông tin người dùng thành công",
+                data: updatedUser,
+            });
+            console.log(exports.updateUser);
+        }
+        else {
+            res.status(400).json({
+                success: false,
+                message: "Cập nhật không thành công, vui lòng thử lại",
+            });
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi khi cập nhật thông tin người dùng",
+            error: error.message,
+        });
+    }
+});
+exports.updateUser = updateUser;
+

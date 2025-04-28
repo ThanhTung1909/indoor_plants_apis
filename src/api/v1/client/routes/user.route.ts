@@ -21,14 +21,14 @@ router.post("/forgotPassword/reset", controller.resetPassword);
 
 
 // Lấy danh sách cây yêu thích của người dùng (dùng middleware authenticateJWT để xác thực người dùng)
-router.get("/myFavourite",authMiddleware.requireAuth, controller.myFavourite);
+router.get("/myFavourite", controller.myFavourite);
 
 // Thêm cây vào danh sách yêu thích
-router.post("/myFavourite/addFavouriteTree",authMiddleware.requireAuth, controller.addFavouriteTree);
+router.post("/myFavourite/addFavouriteTree", controller.addFavouriteTree);
 
 // Xóa cây khỏi danh sách yêu thích
 
-router.post("/myFavourite/deleteFavouriteTree",authMiddleware.requireAuth, controller.deleteFavouriteTree);
+router.post("/myFavourite/deleteFavouriteTree" ,controller.deleteFavouriteTree);
 // Lay user
 router.get("/:token", controller.getUser);
 
@@ -36,6 +36,10 @@ router.get("/:token", controller.getUser);
 router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
 
 // Lấy thông tin profile của người dùng hiện tại (dùng middleware authenticateJWT để xác thực người dùng)
-router.get("/profile",authMiddleware.requireAuth, controller.getUser);
+router.get("/profile", controller.getUser);
+// update thông tin người dùng
+router.post("/update", controller.updateUser);
+
+
 
 export const userRoutes: Router = router;

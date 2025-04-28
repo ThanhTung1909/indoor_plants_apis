@@ -401,3 +401,130 @@ export const myFavouriteFilter = async (
     });
   }
 };
+
+
+
+interface Address {
+  street?: string;
+  ward?: string;
+  district?: string;
+  city?: string;
+  isDefault?: boolean;
+}
+
+
+
+export const updateUser = async (req: RequestWithUser, res: Response) => {
+  try {
+    const token: string = req.body.token;
+    const { username, email, phone, address }: { username: string, email: string, phone: string, address: Address[] } = req.body;
+
+    const user = await User.findOne({ token: token });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email: email });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Email đã tồn tại",
+        });
+      }
+    }
+
+    if (address) {
+      const defaultAddressIndex = address.findIndex((addr: Address) => addr.isDefault === true);
+      if (defaultAddressIndex !== -1) {
+        address.forEach((addr: Address, index: number) => {
+          if (index !== defaultAddressIndex) {
+            addr.isDefault = false;
+          }
+        });
+      }
+    }
+
+    const updatedData: any = {
+      username: username || user.username,
+      email: email || user.email,
+      phone: phone || user.phone, 
+      address: address || user.address,
+    };
+
+    const updatedUser = await User.findOneAndUpdate(
+      { token: token },
+      updatedData,
+      { new: true } 
+    );
+
+    
+    if (updatedUser) {
+      res.status(200).json({
+        success: true,
+        message: "Cập nhật thông tin người dùng thành công",
+        data: updatedUser,
+      });
+
+      console.log(updateUser)
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Cập nhật không thành công, vui lòng thử lại",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật thông tin người dùng",
+      error: error.message,
+    });
+  }
+};
+
+
+export const updatePassword = async (req: Request, res: Response) => {
+  try {
+    const { token, oldPassword, newPassword } = req.body;
+
+    if (!token || !oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu dữ liệu yêu cầu",
+      });
+    }
+
+    const user = await User.findOne({ token: token });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    if (user.password !== md5(oldPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "Mật khẩu cũ không đúng",
+      });
+    }
+
+    user.password = md5(newPassword);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật mật khẩu thành công",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi cập nhật mật khẩu",
+      error: error.message,
+    });
+  }
+};

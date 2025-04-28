@@ -34,17 +34,40 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const CartSchema = new mongoose_1.Schema({
-    UserId: { type: mongoose_1.default.Schema.Types.ObjectId, required: true, ref: 'User' },
-    myCart: [
+const OrderSchema = new mongoose_1.Schema({
+    UserId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
+    orderItems: [
         {
-            productId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Plant', required: true },
-            quantity: { type: Number, default: 1 },
-            totalPrice: { type: Number, required: true },
-        },
+            productId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Plant', required: true },
+            quantity: { type: Number, required: true },
+            price: { type: Number, required: true },
+        }
     ],
+    receiverName: { type: String, required: true },
+    receiverEmail: { type: String, required: true },
+    shippingAddress: { type: String, required: true },
+    phone: { type: String, required: true },
+    totalAmount: { type: Number, required: true },
+    status: {
+        type: String,
+        enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+        default: "pending",
+    },
+    paymentMethod: {
+        type: String,
+        enum: ["cod", "bank_transfer", "paypal"],
+        required: true,
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["unpaid", "paid"],
+        default: "unpaid",
+    },
+    shippingFee: { type: Number, default: 0 },
+    deliveryDate: { type: Date },
+    note: { type: String },
 }, {
     timestamps: true,
 });
-const Cart = mongoose_1.default.model('Cart', CartSchema, 'cart');
-exports.default = Cart;
+const Order = mongoose_1.default.model('Order', OrderSchema, 'orders');
+exports.default = Order;

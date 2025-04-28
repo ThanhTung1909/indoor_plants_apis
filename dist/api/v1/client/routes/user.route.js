@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRoutes = void 0;
 const express_1 = require("express");
 const controller = __importStar(require("../controllers/user.controllers"));
+
 const authMiddleware = __importStar(require("../../../../middlewares/auth.middleware"));
 const router = (0, express_1.Router)();
 router.post("/register", controller.register);
@@ -49,4 +50,5 @@ router.post("/myFavourite/deleteFavouriteTree", authMiddleware.requireAuth, cont
 router.get("/:token", controller.getUser);
 router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
 router.get("/profile", authMiddleware.requireAuth, controller.getUser);
+
 exports.userRoutes = router;
