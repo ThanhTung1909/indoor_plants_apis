@@ -8,7 +8,7 @@ const fs_1 = __importDefault(require("fs"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_model_1 = __importDefault(require("../models/user.model"));
 dotenv_1.default.config();
-mongoose_1.default.connect("mongodb+srv://ttung2827:nFFSj2tmG4LaQ2hO@cluster0.fgdu89k.mongodb.net/indoor_plants_apis")
+mongoose_1.default.connect(process.env.MONGO_URL)
     .then(() => console.log("Connected"))
     .catch(err => console.error(err));
 const userDataRaw = fs_1.default.readFileSync("./dataUser.json", "utf-8");

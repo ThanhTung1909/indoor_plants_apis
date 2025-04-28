@@ -33,18 +33,15 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const CartSchema = new mongoose_1.Schema({
-    UserId: { type: mongoose_1.default.Schema.Types.ObjectId, required: true, ref: 'User' },
-    myCart: [
-        {
-            productId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Plant', required: true },
-            quantity: { type: Number, default: 1 },
-            totalPrice: { type: Number, required: true },
-        },
-    ],
-}, {
-    timestamps: true,
-});
-const Cart = mongoose_1.default.model('Cart', CartSchema, 'cart');
-exports.default = Cart;
+exports.plantRoutes = void 0;
+const express_1 = require("express");
+const controller = __importStar(require("../controllers/plant.controllers"));
+const router = (0, express_1.Router)();
+router.get("/", controller.index);
+router.get("/limit/:limit", controller.getPlantsByLimit);
+router.get("/filter", controller.plantsFilter);
+router.post("/add", controller.addPlant);
+router.get("/category/:categoryId", controller.getPlantsByCategory);
+router.get("/plant-detail/:sku", controller.getPlantDetail);
+router.get("/categories", controller.getCategories);
+exports.plantRoutes = router;

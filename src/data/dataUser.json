@@ -1,5 +1,5 @@
 [
-  { "UserId":"125",
+  { 
     "username": "nguyenvanc",
     "password": "hashed_password_125",
     "email": "nguyenvanc@example.com",

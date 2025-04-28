@@ -33,18 +33,17 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const CartSchema = new mongoose_1.Schema({
-    UserId: { type: mongoose_1.default.Schema.Types.ObjectId, required: true, ref: 'User' },
-    myCart: [
-        {
-            productId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Plant', required: true },
-            quantity: { type: Number, default: 1 },
-            totalPrice: { type: Number, required: true },
-        },
-    ],
-}, {
-    timestamps: true,
-});
-const Cart = mongoose_1.default.model('Cart', CartSchema, 'cart');
-exports.default = Cart;
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const controller = __importStar(require("../controllers/user.controllers"));
+const router = (0, express_1.Router)();
+router.post("/register", controller.register);
+router.post("/login", controller.login);
+router.get("/myFavourite", controller.myFavourite);
+router.post("/myFavourite/addFavouriteTree", controller.addFavouriteTree);
+router.post("/myFavourite/deleteFavouriteTree", controller.deleteFavouriteTree);
+router.get("/:token", controller.getUser);
+router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
+router.get("/profile", controller.getUser);
+router.post("/update", controller.updateUser);
+exports.userRoutes = router;

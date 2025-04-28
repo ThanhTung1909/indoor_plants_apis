@@ -34,17 +34,14 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const CartSchema = new mongoose_1.Schema({
-    UserId: { type: mongoose_1.default.Schema.Types.ObjectId, required: true, ref: 'User' },
-    myCart: [
-        {
-            productId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Plant', required: true },
-            quantity: { type: Number, default: 1 },
-            totalPrice: { type: Number, required: true },
-        },
-    ],
+const ReviewSchema = new mongoose_1.Schema({
+    user_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', require: true },
+    plant_id: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Plant', require: true },
+    rating: { type: Number, require: true, min: 1, max: 5 },
+    content: { type: String },
+    rating_date: { type: Date, default: Date.now }
 }, {
     timestamps: true,
 });
-const Cart = mongoose_1.default.model('Cart', CartSchema, 'cart');
-exports.default = Cart;
+const Review = mongoose_1.default.model('Review', ReviewSchema, 'review');
+exports.default = Review;

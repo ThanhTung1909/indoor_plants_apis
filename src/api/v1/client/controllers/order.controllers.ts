@@ -84,7 +84,11 @@ export const getOrdersByUser = async (req: Request, res: Response) => {
 
     const objectId = new mongoose.Types.ObjectId(UserId);
 
-    const orders = await Order.find({ UserId: objectId }).sort({ createdAt: -1 });
+    const orders = await Order.find({ UserId: objectId })
+    .populate({
+      path: 'orderItems.productId',     
+      select: 'title images'               
+    })
     return res.status(200).json({ success: true, data: orders });
 
   } catch (error: any) {
