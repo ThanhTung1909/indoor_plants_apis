@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-
-exports.generateRandomString = void 0;
-
+exports.generateRandomNumber = exports.generateRandomString = void 0;
 const generateRandomString = (length) => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
@@ -12,7 +10,6 @@ const generateRandomString = (length) => {
     return result;
 };
 exports.generateRandomString = generateRandomString;
-
 const generateRandomNumber = (length) => {
     const characters = "0123456789";
     let result = "";
@@ -22,4 +19,3 @@ const generateRandomNumber = (length) => {
     return result;
 };
 exports.generateRandomNumber = generateRandomNumber;
-

@@ -36,19 +36,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRoutes = void 0;
 const express_1 = require("express");
 const controller = __importStar(require("../controllers/user.controllers"));
-
-const authMiddleware = __importStar(require("../../../../middlewares/auth.middleware"));
 const router = (0, express_1.Router)();
 router.post("/register", controller.register);
 router.post("/login", controller.login);
 router.post("/forgotPassword", controller.forgotPassword);
 router.post("/forgotPassword/otp", controller.forgotPasswordOTP);
 router.post("/forgotPassword/reset", controller.resetPassword);
-router.get("/myFavourite", authMiddleware.requireAuth, controller.myFavourite);
-router.post("/myFavourite/addFavouriteTree", authMiddleware.requireAuth, controller.addFavouriteTree);
-router.post("/myFavourite/deleteFavouriteTree", authMiddleware.requireAuth, controller.deleteFavouriteTree);
+router.get("/myFavourite", controller.myFavourite);
+router.post("/myFavourite/addFavouriteTree", controller.addFavouriteTree);
+router.post("/myFavourite/deleteFavouriteTree", controller.deleteFavouriteTree);
 router.get("/:token", controller.getUser);
 router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
-router.get("/profile", authMiddleware.requireAuth, controller.getUser);
-
+router.get("/profile", controller.getUser);
+router.post("/update", controller.updateUser);
 exports.userRoutes = router;

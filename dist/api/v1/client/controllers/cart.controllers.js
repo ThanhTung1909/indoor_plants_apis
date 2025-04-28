@@ -19,7 +19,6 @@ const getCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const UserId = req.query.UserId || ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
     if (!UserId) {
-
         return res.status(400).json({ success: false, message: 'UserId is required' });
     }
     try {
@@ -34,7 +33,6 @@ const getCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Error fetching cart', error: error.message });
-
     }
 });
 exports.getCart = getCart;
@@ -42,16 +40,12 @@ const addToCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { UserId, productId, quantity } = req.body;
     console.log(req.body);
     if (!UserId || !productId) {
-
         return res.status(400).json({ success: false, message: 'UserId and ProductId are required' });
-
     }
     try {
         const product = yield plant_model_1.default.findById(productId);
         if (!product) {
-
             return res.status(404).json({ success: false, message: 'Product not found' });
-
         }
         const totalPrice = Number(product.price) * quantity;
         const cart = yield cart_model_1.default.findOne({ UserId });
@@ -62,12 +56,10 @@ const addToCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             return res.status(200).json({ success: true, data: newCart });
         }
-
         const productIndex = cart.myCart.findIndex(item => item.productId.toString() === productId);
         if (productIndex > -1) {
             cart.myCart[productIndex].quantity += quantity;
             cart.myCart[productIndex].totalPrice = Number(product.price) * cart.myCart[productIndex].quantity;
-
         }
         else {
             cart.myCart.push({ productId, quantity, totalPrice });
@@ -76,29 +68,23 @@ const addToCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ success: true, data: cart });
     }
     catch (error) {
-
         res.status(500).json({ success: false, message: 'Error adding product to cart', error: error.message });
-
     }
 });
 exports.addToCart = addToCart;
 const removeFromCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { UserId, productId } = req.body;
     if (!UserId || !productId) {
-
         return res.status(400).json({ success: false, message: 'Missing UserId or productId' });
-
     }
     try {
         const cart = yield cart_model_1.default.findOne({ UserId });
         if (!cart) {
-
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
         const productIndex = cart.myCart.findIndex(item => item.productId.toString() === productId);
         if (productIndex === -1) {
             return res.status(404).json({ success: false, message: 'Product not in cart' });
-
         }
         cart.myCart.splice(productIndex, 1);
         if (cart.myCart.length === 0) {
@@ -107,29 +93,24 @@ const removeFromCart = (req, res) => __awaiter(void 0, void 0, void 0, function*
         else {
             yield cart.save();
         }
-
         res.status(200).json({ success: true, message: 'Product removed from cart', data: cart });
     }
     catch (error) {
         res.status(500).json({ success: false, message: 'Error removing product from cart', error: error.message });
-
     }
 });
 exports.removeFromCart = removeFromCart;
 const updateCartQuantity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { UserId, productId, quantity } = req.body;
     if (!UserId || !productId || quantity === undefined) {
-
         return res.status(400).json({ success: false, message: 'Missing UserId, productId, or quantity' });
     }
     if (quantity <= 0) {
         return res.status(400).json({ success: false, message: 'Quantity must be greater than 0' });
-
     }
     try {
         const cart = yield cart_model_1.default.findOne({ UserId });
         if (!cart) {
-
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
         const productIndex = cart.myCart.findIndex((item) => item.productId.toString() === productId.toString());
@@ -139,18 +120,15 @@ const updateCartQuantity = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const product = yield plant_model_1.default.findById(productId);
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
-
         }
         const productPrice = Number(product.price);
         cart.myCart[productIndex].quantity = quantity;
         cart.myCart[productIndex].totalPrice = quantity * productPrice;
         yield cart.save();
-
         res.status(200).json({ success: true, message: 'Product quantity updated', data: cart });
     }
     catch (error) {
         res.status(500).json({ success: false, message: 'Error updating product quantity', error: error.message });
-
     }
 });
 exports.updateCartQuantity = updateCartQuantity;

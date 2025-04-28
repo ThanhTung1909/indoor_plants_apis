@@ -45,15 +45,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-
-exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.login = exports.register = void 0;
+exports.updatePassword = exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.resetPassword = exports.forgotPasswordOTP = exports.forgotPassword = exports.login = exports.register = void 0;
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../../../models/user.model"));
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
+const forgotPassword_model_1 = __importDefault(require("../../../../models/forgotPassword.model"));
 const generate = __importStar(require("../../../../helper/generate"));
 const pagination_helpler_1 = __importDefault(require("../../../../helper/pagination.helpler"));
 const mongoose_1 = __importDefault(require("mongoose"));
-
+const sendMail_1 = __importDefault(require("../../../../helper/sendMail"));
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const existEmail = yield user_model_1.default.findOne({
         email: req.body.email,
@@ -68,9 +68,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         username: req.body.username,
         email: req.body.email,
         password: (0, md5_1.default)(req.body.password),
-
         phone: req.body.phone,
-
         token: generate.generateRandomString(30),
     };
     const user = new user_model_1.default(inforUser);
@@ -104,9 +102,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     const token = user.token;
-
     res.cookie("token", user.token);
-
     res.status(201).json({
         success: true,
         message: "Đăng nhập thành công",
@@ -114,7 +110,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.login = login;
-
 const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const user = yield user_model_1.default.findOne({ email: email });
@@ -198,7 +193,6 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     });
 });
 exports.resetPassword = resetPassword;
-
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.params.token;
@@ -362,7 +356,6 @@ const myFavouriteFilter = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.myFavouriteFilter = myFavouriteFilter;
-
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.body.token;
@@ -424,4 +417,41 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.updateUser = updateUser;
-
+const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { token, oldPassword, newPassword } = req.body;
+        if (!token || !oldPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Thiếu dữ liệu yêu cầu",
+            });
+        }
+        const user = yield user_model_1.default.findOne({ token: token });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Không tìm thấy người dùng",
+            });
+        }
+        if (user.password !== (0, md5_1.default)(oldPassword)) {
+            return res.status(400).json({
+                success: false,
+                message: "Mật khẩu cũ không đúng",
+            });
+        }
+        user.password = (0, md5_1.default)(newPassword);
+        yield user.save();
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật mật khẩu thành công",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi cập nhật mật khẩu",
+            error: error.message,
+        });
+    }
+});
+exports.updatePassword = updatePassword;
