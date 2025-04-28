@@ -53,6 +53,7 @@ const UserSchema = new mongoose_1.Schema({
     phone: { type: String },
     role: { type: String, default: "user" },
     status: { type: String, default: "active" },
+    otp: { type: String },
 }, {
     timestamps: true,
 });

@@ -45,6 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+
 exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.login = exports.register = void 0;
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../../../models/user.model"));
@@ -52,6 +53,7 @@ const plant_model_1 = __importDefault(require("../../../../models/plant.model"))
 const generate = __importStar(require("../../../../helper/generate"));
 const pagination_helpler_1 = __importDefault(require("../../../../helper/pagination.helpler"));
 const mongoose_1 = __importDefault(require("mongoose"));
+
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const existEmail = yield user_model_1.default.findOne({
         email: req.body.email,
@@ -66,6 +68,9 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         username: req.body.username,
         email: req.body.email,
         password: (0, md5_1.default)(req.body.password),
+
+        phone: req.body.phone,
+
         token: generate.generateRandomString(30),
     };
     const user = new user_model_1.default(inforUser);
@@ -99,6 +104,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     const token = user.token;
+
+    res.cookie("token", user.token);
+
     res.status(201).json({
         success: true,
         message: "Đăng nhập thành công",
@@ -106,6 +114,91 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.login = login;
+
+const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = req.body.email;
+    const user = yield user_model_1.default.findOne({ email: email });
+    if (!user) {
+        res.status(400).json({
+            success: false,
+            message: "Email không tồn tại",
+        });
+        return;
+    }
+    const otp = generate.generateRandomNumber(8);
+    const forgotPassword = new forgotPassword_model_1.default({
+        email: email,
+        otp: otp,
+        expireAt: Date.now()
+    });
+    yield forgotPassword.save();
+    const subject = "Mã OTP xác minh yêu cầu thay đổi mật khẩu từ Paradise Plants";
+    const html = `
+    <p>Chào bạn,</p>
+
+    <p>Để bảo mật tài khoản của bạn, Paradise Plants đã nhận được yêu cầu thay đổi mật khẩu. Mã OTP xác minh của bạn là:</p>
+
+    <h2 style="color: #4CAF50; font-weight: bold;">${otp}</h2>
+
+    <p>Vui lòng nhập mã OTP trên trong vòng 3 phút để hoàn tất việc thay đổi mật khẩu.</p>
+
+    <p>Chú ý: Mã OTP này chỉ có hiệu lực trong 3 phút và không được chia sẻ với bất kỳ ai. Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này.</p>
+
+    <p>Trân trọng,<br>Đội ngũ hỗ trợ của Paradise Plants</p>
+  `;
+    (0, sendMail_1.default)(email, subject, html);
+    res.status(200).json({
+        success: true,
+        message: "Email không tồn tại",
+    });
+});
+exports.forgotPassword = forgotPassword;
+const forgotPasswordOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = req.body.email;
+    const otp = req.body.otp;
+    const result = yield forgotPassword_model_1.default.findOne({
+        email: email,
+        otp: otp,
+    });
+    if (!result) {
+        res.status(400).json({
+            success: false,
+            message: "Mã OTP không chính xác hoặc đã hết hạn",
+        });
+        return;
+    }
+    const user = yield user_model_1.default.findOne({
+        email: email,
+    });
+    res.status(200).json({
+        success: true,
+        message: "Mã OTP chính xác",
+        token: user.token,
+    });
+});
+exports.forgotPasswordOTP = forgotPasswordOTP;
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const password = req.body.password;
+    const token = req.body.tokenValue;
+    const result = yield user_model_1.default.updateOne({
+        token: token,
+    }, {
+        password: (0, md5_1.default)(password),
+    });
+    if (!result) {
+        res.status(400).json({
+            success: false,
+            message: "Cập nhật mật khẩu không thành công",
+        });
+        return;
+    }
+    res.status(200).json({
+        success: true,
+        message: "Cập nhật mật khẩu thành công",
+    });
+});
+exports.resetPassword = resetPassword;
+
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.params.token;
@@ -269,6 +362,7 @@ const myFavouriteFilter = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.myFavouriteFilter = myFavouriteFilter;
+
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.body.token;
@@ -330,3 +424,4 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.updateUser = updateUser;
+
