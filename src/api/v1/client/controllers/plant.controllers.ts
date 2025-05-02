@@ -27,27 +27,6 @@ export const index = async (req: RequestWithUser, res: Response) => {
   }
 };
 
-// [POST] /api/v1/plants/add
-export const addPlant = async (req: Request, res: Response) => {
-  try {
-    const planData = req.body;
-    const newPlan = new Plant(planData);
-
-    await newPlan.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Add Plant SuccessFully",
-      data: newPlan,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Lỗi khi thêm cây mới",
-      error: error.message,
-    });
-  }
-};
 
 // [GET] /api/v1/plants/category/:categoryId
 
