@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
+exports.requireAdminAuth = exports.requireAuth = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
 const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.headers.authorization) {
@@ -39,3 +39,32 @@ const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.requireAuth = requireAuth;
+const requireAdminAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(403).json({
+                success: false,
+                message: "Không có quyền truy cập",
+            });
+        }
+        const token = authHeader.split(" ")[1];
+        const user = yield user_model_1.default.findOne({ token }).select("-password -token");
+        if (!user || user.role !== "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Không có quyền truy cập",
+            });
+        }
+        req.user = user;
+        next();
+    }
+    catch (error) {
+        console.error("Auth error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi xác thực người dùng",
+        });
+    }
+});
+exports.requireAdminAuth = requireAdminAuth;
