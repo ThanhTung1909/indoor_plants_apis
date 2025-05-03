@@ -36,7 +36,7 @@ interface IPlant extends Document {
     lighting_requirements: string;
     water_needs: string;
   };
-  stock_quantity: number;
+  stock: number;
   import_date: Date;
   origin_country?: string;
 }
@@ -46,39 +46,44 @@ const PlantSchema: Schema = new Schema(
     sku: { type: String, required: true },
     title: { type: String, required: true },
     category: { type: String, required: true },
-    short_description: { type: String, required: true },
-    description: { type: String, required: true },
+    short_description: { type: String },
+    description: { type: String },
     characteristics: {
-      scientific_name: { type: String, required: true },
-      family: { type: String, required: true },
-      origin: { type: String, required: true },
-      growth_habit: { type: String, required: true },
-      leaves: { type: String, required: true },
-      flowers: { type: String, required: true },
-      roots: { type: String, required: true },
+      scientific_name: { type: String },
+      family: { type: String },
+      origin: { type: String },
+      growth_habit: { type: String },
+      leaves: { type: String },
+      flowers: { type: String },
+      roots: { type: String },
     },
     meaning: {
-      feng_shui: { type: String, required: true },
-      placement: { type: String, required: true },
+      feng_shui: { type: String },
+      placement: { type: String },
     },
     care_instructions: {
-      watering: { type: String, required: true },
-      lighting: { type: String, required: true },
-      temperature: { type: String, required: true },
-      fertilizing: { type: String, required: true },
-      cleaning: { type: String, required: true },
+      watering: { type: String },
+      lighting: { type: String },
+      temperature: { type: String },
+      fertilizing: { type: String },
+      cleaning: { type: String },
     },
     images: { type: [String], required: true },
     price: { type: Number, required: true },
-    discount: { type: String, required: true },
+    discount: { type: String },
     specifications: {
-      height: { type: String, required: true },
-      pot_size: { type: String, required: true },
-      difficulty: { type: String, required: true },
-      lighting_requirements: { type: String, required: true },
-      water_needs: { type: String, required: true },
+      height: { type: String },
+      pot_size: { type: String },
+      difficulty: { type: String },
+      lighting_requirements: { type: String },
+      water_needs: { type: String },
     },
+    stock: { type: Number, required: true },
+    import_date: { type: Date, default: Date.now },
+    origin_country: { type: String },
+    deleted: { type: Boolean, default: false },
   },
+
   { timestamps: true }
 );
 

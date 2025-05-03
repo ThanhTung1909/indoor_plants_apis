@@ -12,4 +12,13 @@ router.post(
   productController.create
 );
 
+router.put(
+  "/edit/:sku",
+  upload.single("image"),
+  uploadImageToCloudinary,
+  productController.editProductBySku
+);
+
+router.delete("/deleted/:sku", productController.deleteProductBySku);
+
 export const productRoutes: Router = router;
