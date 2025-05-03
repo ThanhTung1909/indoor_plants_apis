@@ -39,6 +39,8 @@ export const register = async (req: Request, res: Response) => {
 
 // [POST] /api/v1/admin/login
 export const login = async (req: Request, res: Response) => {
+  console.log(req.body);
+
   const email: string = req.body.email;
   const password: string = req.body.password;
 
@@ -60,6 +62,13 @@ export const login = async (req: Request, res: Response) => {
     });
     return;
   }
+  if (user.role !== "admin") {
+    res.status(400).json({
+      success: false,
+      message: "Không có quyền truy cập",
+    });
+    return;
+  }
 
   const token = user.token;
 
@@ -67,5 +76,11 @@ export const login = async (req: Request, res: Response) => {
     success: true,
     message: "Đăng nhập thành công",
     token: token,
+    user: {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      name: user.username,
+    },
   });
 };

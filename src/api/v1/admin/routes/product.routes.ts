@@ -21,7 +21,7 @@ router.put(
 
 router.delete("/deleted/:sku", productController.deleteProductBySku);
 
-router.get("/", productController.getAllProduct);
+router.get("/all", productController.getAllProduct);
 router.get("/detail/:sku", productController.getDetailBySku);
 
 export const productRoutes: Router = router;

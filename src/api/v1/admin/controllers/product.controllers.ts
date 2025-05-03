@@ -81,25 +81,29 @@ export const deleteProductBySku = async (req: Request, res: Response, next) => {
 // [GET] /api/v1/admin/product
 export const getAllProduct = async (req: Request, res: Response, next) => {
   try {
-    const plants = await Plant.find({ deleted: { $ne: true } });
-    if (plants.length < 0) {
+    const plants = await Plant.find({ deleted: { $ne: true } }).populate(
+      "category"
+    );
+
+    if (!plants || plants.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Plant not found",
+        message: "No plants found",
       });
     }
-    res.status(201).json({
+
+    res.status(200).json({
       success: true,
-      message: "Plant found successfully",
+      message: "Plants retrieved successfully",
       data: plants,
     });
   } catch (error) {
-    console.error("Error updating plant by SKU:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching plants:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// api/v1/admin/product/detail/:sku
+// [GET] /api/v1/admin/product/detail/:sku
 export const getDetailBySku = async (req: Request, res: Response, next) => {
   try {
     const sku = req.params;

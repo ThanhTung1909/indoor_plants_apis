@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 interface IPlant extends Document {
   sku: string;
   title: string;
-  category: string;
+  category: Types.ObjectId;
   short_description: string;
   description: string;
   characteristics: {
@@ -45,7 +45,11 @@ const PlantSchema: Schema = new Schema(
   {
     sku: { type: String, required: true },
     title: { type: String, required: true },
-    category: { type: String, required: true },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     short_description: { type: String },
     description: { type: String },
     characteristics: {
