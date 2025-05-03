@@ -78,3 +78,46 @@ export const deleteProductBySku = async (req: Request, res: Response, next) => {
   }
 };
 
+// [GET] /api/v1/admin/product
+export const getAllProduct = async (req: Request, res: Response, next) => {
+  try {
+    const plants = await Plant.find({ deleted: { $ne: true } });
+    if (plants.length < 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Plant not found",
+      });
+    }
+    res.status(201).json({
+      success: true,
+      message: "Plant found successfully",
+      data: plants,
+    });
+  } catch (error) {
+    console.error("Error updating plant by SKU:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// api/v1/admin/product/detail/:sku
+export const getDetailBySku = async (req: Request, res: Response, next) => {
+  try {
+    const sku = req.params;
+
+    const plant = await Plant.findOne({ sku, deleted: { $ne: true } });
+    if (!plant) {
+      return res.status(404).json({
+        success: false,
+        message: "Plant not found with this SKU",
+      });
+    }
+    res.status(201).json({
+      success: true,
+      message: "Plant found with this SKU successfully",
+      data: plant,
+    });
+  } catch (error) {
+    console.error("Error updating plant by SKU:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
