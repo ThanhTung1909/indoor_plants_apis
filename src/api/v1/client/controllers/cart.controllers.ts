@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import Cart from '../../../../models/cart.model';
 import Product from '../../../../models/plant.model';
+import { log } from 'console';
 
 // src/types/express.d.ts
 export interface RequestWithUser extends Request {
@@ -10,7 +11,9 @@ export interface RequestWithUser extends Request {
 // GET /cart
 // GET /cart
 export const getCart = async (req: RequestWithUser, res: Response) => {
-  const UserId = req.query.UserId as string || req.user?.id;
+  // const UserId = req.query.UserId as string || req.user?.id;
+  const UserId = req.body.params
+  
 
   if (!UserId) {
     return res.status(400).json({ success: false, message: 'UserId is required' });

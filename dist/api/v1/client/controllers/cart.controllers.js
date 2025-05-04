@@ -16,8 +16,7 @@ exports.updateCartQuantity = exports.removeFromCart = exports.addToCart = export
 const cart_model_1 = __importDefault(require("../../../../models/cart.model"));
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
 const getCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const UserId = req.query.UserId || ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
+    const UserId = req.body.params;
     if (!UserId) {
         return res.status(400).json({ success: false, message: 'UserId is required' });
     }

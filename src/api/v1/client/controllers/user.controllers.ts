@@ -341,14 +341,6 @@ export const myFavouriteFilter = async (
       myFavouriteTree?: string[];
     };
 
-    // if (!user || !(user.myFavouriteTree && user.myFavouriteTree.length)) {
-    //     return res.status(200).json({
-    //         success: true,
-    //         data: [],
-    //         userId : userId,
-    //         pagination: { page: 1, total: 0, totalPage: 0, limit: 8 },
-    //     });
-    // }
 
     const objectIds = user.myFavouriteTree.map(
       (id) => new mongoose.Types.ObjectId(id)
@@ -417,7 +409,7 @@ interface Address {
 export const updateUser = async (req: RequestWithUser, res: Response) => {
   try {
     const token: string = req.body.token;
-    const { username, email, phone, address }: { username: string, email: string, phone: string, address: Address[] } = req.body;
+    const { username, email, phone, avatar }: { username: string, email: string, phone: string,avatar : string } = req.body;
 
     const user = await User.findOne({ token: token });
     if (!user) {
@@ -437,22 +429,13 @@ export const updateUser = async (req: RequestWithUser, res: Response) => {
       }
     }
 
-    if (address) {
-      const defaultAddressIndex = address.findIndex((addr: Address) => addr.isDefault === true);
-      if (defaultAddressIndex !== -1) {
-        address.forEach((addr: Address, index: number) => {
-          if (index !== defaultAddressIndex) {
-            addr.isDefault = false;
-          }
-        });
-      }
-    }
+   
 
     const updatedData: any = {
       username: username || user.username,
       email: email || user.email,
-      phone: phone || user.phone, 
-      address: address || user.address,
+      phone: phone || user.phone,
+      avatar: avatar || user.avatar,
     };
 
     const updatedUser = await User.findOneAndUpdate(
@@ -469,7 +452,7 @@ export const updateUser = async (req: RequestWithUser, res: Response) => {
         data: updatedUser,
       });
 
-      console.log(updateUser)
+
     } else {
       res.status(400).json({
         success: false,
@@ -528,3 +511,71 @@ export const updatePassword = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export const addAddress = async (req: Request, res: Response) => {
+  try {
+    const token : string = req.body.token;
+    const { street, ward, district, city, isDefault } = req.body as Address;
+    if(isDefault){
+      await User.updateMany({token : token },{
+        $set: { "address.$[].isDefault": false },
+      });
+    }
+    const address =  await User.updateOne({token : token}, {
+      $push: {
+        address: {
+          street: street,
+          ward: ward,
+          district: district,
+          city: city,
+          isDefault: isDefault || false,
+        },
+      },
+    });
+
+    
+    res.status(200).json({
+      success: true,
+      message: "Thêm địa chỉ thành công",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi thêm địa chỉ",
+    })
+  }
+}
+
+
+export const updateAddress = async (req: Request, res: Response) => {
+  try {
+    const token : string = req.body.token;
+    const { street, ward, district, city, isDefault, id } = req.body;
+    if(isDefault){
+      await User.updateMany({token : token },{
+        $set: { "address.$[].isDefault": false },
+      });
+    }
+    await User.updateOne({token : token, "address._id" : id}, {
+      $set: {
+        "address.$.street": street,
+        "address.$.ward": ward,
+        "address.$.district": district,
+        "address.$.city": city,
+        "address.$.isDefault": isDefault || false,
+      },
+    });
+
+    
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật địa chỉ thành công",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật địa chỉ",
+    })
+  }
+}

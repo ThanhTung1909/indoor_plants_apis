@@ -1,6 +1,10 @@
 import { Router } from "express";
 import * as controller from "../controllers/user.controllers";
 import * as authMiddleware from "../../../../middlewares/auth.middleware"
+const multer = require('multer');
+const upload = multer();
+import * as uploadCloud from "../../../../middlewares/uploadCloud.middleware";
+
 
 const router: Router = Router();
 
@@ -37,8 +41,19 @@ router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
 
 // Lấy thông tin profile của người dùng hiện tại (dùng middleware authenticateJWT để xác thực người dùng)
 router.get("/profile", controller.getUser);
+
 // update thông tin người dùng
-router.post("/update", controller.updateUser);
+router.post("/update", 
+    upload.single('avatar'),
+    uploadCloud.upload,
+    controller.updateUser
+);
+
+// thêm address 
+router.post("/addAddress", controller.addAddress);
+
+// update address
+router.post("/updateAddress", controller.updateAddress);
 
 
 
