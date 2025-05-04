@@ -36,9 +36,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRoutes = void 0;
 const express_1 = require("express");
 const controller = __importStar(require("../controllers/user.controllers"));
+
 const multer = require('multer');
 const upload = multer();
 const uploadCloud = __importStar(require("../../../../middlewares/uploadCloud.middleware"));
+
 const router = (0, express_1.Router)();
 router.post("/register", controller.register);
 router.post("/login", controller.login);
@@ -51,7 +53,9 @@ router.post("/myFavourite/deleteFavouriteTree", controller.deleteFavouriteTree);
 router.get("/:token", controller.getUser);
 router.get("/myFavourite/filter/:userId", controller.myFavouriteFilter);
 router.get("/profile", controller.getUser);
+
 router.post("/update", upload.single('avatar'), uploadCloud.upload, controller.updateUser);
 router.post("/addAddress", controller.addAddress);
 router.post("/updateAddress", controller.updateAddress);
+
 exports.userRoutes = router;
