@@ -37,7 +37,7 @@ exports.categoriesRouter = void 0;
 const express_1 = require("express");
 const categoriesController = __importStar(require("../controllers/category.controllers"));
 const router = (0, express_1.Router)();
-router.get("/", categoriesController.getAllCategories);
+router.get("/all", categoriesController.getAllCategories);
 router.get("/detail/:slug", categoriesController.getCategoryBySlug);
 router.post("/create", categoriesController.createCategory);
 router.put("/edit/:slug", categoriesController.updateCategoryBySlug);

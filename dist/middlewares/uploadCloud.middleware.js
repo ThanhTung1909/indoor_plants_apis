@@ -15,32 +15,42 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadImageToCloudinary = void 0;
 const cloudinary_1 = require("cloudinary");
 const streamifier_1 = __importDefault(require("streamifier"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 cloudinary_1.v2.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET,
 });
 const uploadImageToCloudinary = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.file || !req.file.buffer)
+    if (!req.files || !Array.isArray(req.files)) {
         return next();
-    const streamUpload = () => {
+    }
+    const uploadPromises = req.files.map((file) => {
         return new Promise((resolve, reject) => {
-            const stream = cloudinary_1.v2.uploader.upload_stream({ folder: "your_folder_name" }, (error, result) => {
-                if (error || !result)
-                    return reject(error || new Error("No result"));
-                resolve(result);
+            const stream = cloudinary_1.v2.uploader.upload_stream({ folder: "plants" }, (error, result) => {
+                if (error || !result) {
+                    reject(error || new Error("No result returned"));
+                }
+                else {
+                    resolve(result.secure_url);
+                }
             });
-            streamifier_1.default.createReadStream(req.file.buffer).pipe(stream);
+            streamifier_1.default.createReadStream(file.buffer).pipe(stream);
         });
-    };
+    });
     try {
-        const result = yield streamUpload();
-        req.body[req.file.fieldname] = result.secure_url;
+        const imageUrls = yield Promise.all(uploadPromises);
+        req.body.images = imageUrls;
         next();
     }
     catch (error) {
         console.error("Cloudinary upload error:", error);
-        res.status(500).json({ success: false, message: "Upload failed" });
+        res.status(500).json({
+            success: false,
+            message: "Image upload failed",
+            error: error.message,
+        });
     }
 });
 exports.uploadImageToCloudinary = uploadImageToCloudinary;

@@ -1,8 +1,12 @@
 import { Response, NextFunction } from "express";
-import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 import { RequestWithFile } from "../types/request";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+// Configure Cloudinary using environment variables
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME!,
   api_key: process.env.API_KEY!,
@@ -14,28 +18,37 @@ export const uploadImageToCloudinary = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.file || !req.file.buffer) return next();
+  if (!req.files || !Array.isArray(req.files)) {
+    return next();
+  }
 
-  const streamUpload = (): Promise<UploadApiResponse> => {
-    return new Promise((resolve, reject) => {
+  const uploadPromises = req.files.map((file) => {
+    return new Promise<string>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "your_folder_name" },
+        { folder: "plants" },
         (error, result) => {
-          if (error || !result) return reject(error || new Error("No result"));
-          resolve(result);
+          if (error || !result) {
+            reject(error || new Error("No result returned"));
+          } else {
+            resolve(result.secure_url);
+          }
         }
       );
 
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
+      streamifier.createReadStream(file.buffer).pipe(stream);
     });
-  };
+  });
 
   try {
-    const result = await streamUpload();
-    req.body[req.file.fieldname] = result.secure_url;
+    const imageUrls = await Promise.all(uploadPromises);
+    req.body.images = imageUrls;
     next();
   } catch (error) {
     console.error("Cloudinary upload error:", error);
-    res.status(500).json({ success: false, message: "Upload failed" });
+    res.status(500).json({
+      success: false,
+      message: "Image upload failed",
+      error: error.message,
+    });
   }
 };

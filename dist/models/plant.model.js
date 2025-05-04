@@ -37,7 +37,11 @@ const mongoose_1 = __importStar(require("mongoose"));
 const PlantSchema = new mongoose_1.Schema({
     sku: { type: String, required: true },
     title: { type: String, required: true },
-    category: { type: String, required: true },
+    category: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+    },
     short_description: { type: String },
     description: { type: String },
     characteristics: {

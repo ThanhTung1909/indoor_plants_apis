@@ -78,6 +78,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.register = register;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
     const user = yield user_model_1.default.findOne({
@@ -97,11 +98,24 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         return;
     }
+    if (user.role !== "admin") {
+        res.status(400).json({
+            success: false,
+            message: "Không có quyền truy cập",
+        });
+        return;
+    }
     const token = user.token;
     res.status(201).json({
         success: true,
         message: "Đăng nhập thành công",
         token: token,
+        user: {
+            id: user._id,
+            email: user.email,
+            role: user.role,
+            name: user.username,
+        },
     });
 });
 exports.login = login;

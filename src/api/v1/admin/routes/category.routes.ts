@@ -3,7 +3,7 @@ import * as categoriesController from "../controllers/category.controllers";
 
 const router: Router = Router();
 
-router.get("/", categoriesController.getAllCategories);
+router.get("/all", categoriesController.getAllCategories);
 router.get("/detail/:slug", categoriesController.getCategoryBySlug);
 
 router.post("/create", categoriesController.createCategory);

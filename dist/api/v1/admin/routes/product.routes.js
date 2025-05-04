@@ -39,9 +39,9 @@ const productController = __importStar(require("../controllers/product.controlle
 const multer_1 = require("../../../../middlewares/multer");
 const uploadCloud_middleware_1 = require("../../../../middlewares/uploadCloud.middleware");
 const router = (0, express_1.Router)();
-router.post("/create", multer_1.upload.single("image"), uploadCloud_middleware_1.uploadImageToCloudinary, productController.create);
-router.put("/edit/:sku", multer_1.upload.single("image"), uploadCloud_middleware_1.uploadImageToCloudinary, productController.editProductBySku);
+router.post("/create", multer_1.upload.array("images"), uploadCloud_middleware_1.uploadImageToCloudinary, productController.create);
+router.put("/edit/:sku", multer_1.upload.array("images"), uploadCloud_middleware_1.uploadImageToCloudinary, productController.editProductBySku);
 router.delete("/deleted/:sku", productController.deleteProductBySku);
-router.get("/", productController.getAllProduct);
+router.get("/all", productController.getAllProduct);
 router.get("/detail/:sku", productController.getDetailBySku);
 exports.productRoutes = router;

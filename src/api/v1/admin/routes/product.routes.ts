@@ -7,14 +7,14 @@ const router: Router = Router();
 
 router.post(
   "/create",
-  upload.single("image"),
+  upload.array("images"),
   uploadImageToCloudinary,
   productController.create
 );
 
 router.put(
   "/edit/:sku",
-  upload.single("image"),
+  upload.array("images"),
   uploadImageToCloudinary,
   productController.editProductBySku
 );

@@ -16,7 +16,7 @@ export const createCategory = async (req: Request, res: Response, next) => {
   }
 };
 
-// [GET] api/v1/admin/category/
+// [GET] api/v1/admin/category/all
 export const getAllCategories = async (req: Request, res: Response, next) => {
   try {
     const categories = await Category.find({ isActive: true }).populate(
