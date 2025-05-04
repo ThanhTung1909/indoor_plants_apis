@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteOrder = exports.updateOrderStatus = exports.getOrderDetail = exports.getOrdersByUser = exports.createOrder = void 0;
 const order_model_1 = __importDefault(require("../../../../models/order.model"));
 const cart_model_1 = __importDefault(require("../../../../models/cart.model"));
+const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -99,18 +100,31 @@ const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const { orderId } = req.params;
         const { status } = req.body;
-        const allowedStatus = ["pending", "processing", "shipped", "delivered", "cancelled"];
+        const cleanOrderId = orderId.trim();
+        console.log("Order ID:", orderId);
+        console.log("New Status:", status);
+        const allowedStatus = ["pending", "processing", "shipped", "delivered", "cancelled", "received"];
         if (!allowedStatus.includes(status)) {
             return res.status(400).json({ success: false, message: 'Invalid status value' });
         }
-        const order = yield order_model_1.default.findByIdAndUpdate(orderId, { status }, { new: true });
+        const order = yield order_model_1.default.findByIdAndUpdate(cleanOrderId, { status }, { new: true });
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+        if (status === "cancelled") {
+            for (const item of order.orderItems) {
+                yield plant_model_1.default.findByIdAndUpdate(item.productId, {
+                    $inc: { stock_quantity: item.quantity },
+                });
+            }
+        }
+        if (status === "received") {
+            console.log(`Order ${orderId} has been received.`);
         }
         return res.status(200).json({ success: true, message: 'Order status updated', data: order });
     }
     catch (error) {
-        console.error(error);
+        console.error("Error while updating order status:", error);
         return res.status(500).json({ success: false, message: 'Error updating status', error: error.message });
     }
 });
