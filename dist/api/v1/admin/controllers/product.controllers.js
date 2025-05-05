@@ -98,7 +98,6 @@ const editProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                 lighting_requirements: req.body.specifications.lighting_requirements,
                 water_needs: req.body.specifications.water_needs,
             }, images: allImages, import_date: req.body.import_date, origin_country: req.body.origin_country });
-        console.log(updateData);
         const updatedPlant = yield plant_model_1.default.findOneAndUpdate({ sku }, updateData, {
             new: true,
             runValidators: true,
