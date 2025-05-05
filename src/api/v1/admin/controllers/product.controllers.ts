@@ -119,7 +119,7 @@ export const editProductBySku = async (req: Request, res: Response, next) => {
       origin_country: req.body.origin_country,
     };
 
-    console.log(updateData);
+    
     
 
     const updatedPlant = await Plant.findOneAndUpdate({ sku }, updateData, {
