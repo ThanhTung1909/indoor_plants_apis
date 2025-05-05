@@ -40,7 +40,6 @@ const router = (0, express_1.Router)();
 router.get("/", controller.index);
 router.get("/limit/:limit", controller.getPlantsByLimit);
 router.get("/filter", controller.plantsFilter);
-router.post("/add", controller.addPlant);
 router.get("/category/:categoryId", controller.getPlantsByCategory);
 router.get("/plant-detail/:sku", controller.getPlantDetail);
 router.get("/categories", controller.getCategories);

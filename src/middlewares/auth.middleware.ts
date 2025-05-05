@@ -55,3 +55,38 @@ export const requireAuth = async (
     });
   }
 };
+
+export const requireAdminAuth = async (
+  req: RequestWithUser,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền truy cập",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const user = await User.findOne({ token }).select("-password -token");
+
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền truy cập",
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Auth error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi xác thực người dùng",
+    });
+  }
+};

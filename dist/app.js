@@ -44,6 +44,7 @@ dotenv_1.default.config();
 const database = __importStar(require("./config/database"));
 const index_route_1 = __importDefault(require("./api/v1/client/routes/index.route"));
 const index_routes_1 = __importDefault(require("./api/v1/admin/routes/index.routes"));
+dotenv_1.default.config();
 database.connect();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
