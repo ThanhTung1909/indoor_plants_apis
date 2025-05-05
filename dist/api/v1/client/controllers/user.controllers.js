@@ -45,9 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-
 exports.updateAddress = exports.addAddress = exports.updatePassword = exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.resetPassword = exports.forgotPasswordOTP = exports.forgotPassword = exports.login = exports.register = void 0;
-
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../../../models/user.model"));
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
@@ -446,7 +444,6 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updatePassword = updatePassword;
-
 const addAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.body.token;
@@ -511,4 +508,3 @@ const updateAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.updateAddress = updateAddress;
-
