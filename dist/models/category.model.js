@@ -32,23 +32,12 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const mongoose_slug_updater_1 = __importDefault(require("mongoose-slug-updater"));
-mongoose_1.default.plugin(mongoose_slug_updater_1.default);
 const CategorySchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     description: { type: String },
-    slug: {
-        type: String,
-        slug: "title",
-        unique: true,
-        slugPaddingSize: 4,
-        permanent: false,
-    },
+    slug: { type: String, unique: true },
     parentCategory: { type: mongoose_1.default.Types.ObjectId, ref: "Category" },
     imageUrl: { type: String },
     isActive: { type: Boolean, default: true },
