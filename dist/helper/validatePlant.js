@@ -24,12 +24,6 @@ const validatePlant = (data) => {
     if (!Array.isArray(data.images) || data.images.length === 0) {
         errors.images = "At least one image is required.";
     }
-    if (data.characteristics && typeof data.characteristics !== "object") {
-        errors.characteristics = "Characteristics must be an object.";
-    }
-    if (data.specifications && typeof data.specifications !== "object") {
-        errors.specifications = "Specifications must be an object.";
-    }
     return errors;
 };
 exports.validatePlant = validatePlant;

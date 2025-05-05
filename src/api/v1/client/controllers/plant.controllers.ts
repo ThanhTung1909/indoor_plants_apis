@@ -34,8 +34,7 @@ export const getPlantsByCategory = async (req: Request, res: Response) => {
   try {
     const { categoryId } = req.params;
 
-    const categoryIdObjectId = new mongoose.Types.ObjectId(categoryId);
-    const plants = await Plant.find({ category: categoryIdObjectId });
+    const plants = await Plant.find({ category: categoryId });
 
     res.status(201).json({
       success: true,

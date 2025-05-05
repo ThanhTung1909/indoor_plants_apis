@@ -18,30 +18,31 @@ const validatePlant_1 = require("../../../../helper/validatePlant");
 const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const plantData = Object.assign(Object.assign({}, req.body), { characteristics: {
-                scientific_name: req.body["characteristics[scientific_name]"],
-                family: req.body["characteristics[family]"],
-                origin: req.body["characteristics[origin]"],
-                growth_habit: req.body["characteristics[growth_habit]"],
-                leaves: req.body["characteristics[leaves]"],
-                flowers: req.body["characteristics[flowers]"],
-                roots: req.body["characteristics[roots]"],
+                scientific_name: req.body.characteristics.scientific_name,
+                family: req.body.characteristics.family,
+                origin: req.body.characteristics.origin,
+                growth_habit: req.body.characteristics.growth_habit,
+                leaves: req.body.characteristics.leaves,
+                flowers: req.body.characteristics.flowers,
+                roots: req.body.characteristics.roots,
             }, meaning: {
-                feng_shui: req.body["meaning[feng_shui]"],
-                placement: req.body["meaning[placement]"],
+                feng_shui: req.body.meaning.feng_shui,
+                placement: req.body.meaning.placement,
             }, care_instructions: {
-                watering: req.body["care_instructions[watering]"],
-                lighting: req.body["care_instructions[lighting]"],
-                temperature: req.body["care_instructions[temperature]"],
-                fertilizing: req.body["care_instructions[fertilizing]"],
-                cleaning: req.body["care_instructions[cleaning]"],
+                watering: req.body.care_instructions.watering,
+                lighting: req.body.care_instructions.lighting,
+                temperature: req.body.care_instructions.temperature,
+                fertilizing: req.body.care_instructions.fertilizing,
+                cleaning: req.body.care_instructions.cleaning,
             }, specifications: {
-                height: req.body["specifications[height]"],
-                pot_size: req.body["specifications[pot_size]"],
-                difficulty: req.body["specifications[difficulty]"],
-                lighting_requirements: req.body["specifications[lighting_requirements]"],
-                water_needs: req.body["specifications[water_needs]"],
-            }, images: req.body.images, import_date: req.body.importDate, origin_country: req.body.originCountry });
+                height: req.body.specifications.height,
+                pot_size: req.body.specifications.pot_size,
+                difficulty: req.body.specifications.difficulty,
+                lighting_requirements: req.body.specifications.lighting_requirements,
+                water_needs: req.body.specifications.water_needs,
+            }, images: req.body.images, import_date: req.body.import_date, origin_country: req.body.origin_country });
         const errors = (0, validatePlant_1.validatePlant)(plantData);
+        console.log(errors);
         if (Object.keys(errors).length > 0) {
             return res.status(400).json({
                 success: false,
@@ -49,7 +50,6 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 errors,
             });
         }
-        console.log(errors);
         const newPlant = new plant_model_1.default(plantData);
         yield newPlant.save();
         res.status(201).json({
@@ -74,30 +74,31 @@ const editProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const existingImages = req.body.existingImages || [];
         const newImages = req.body.images;
         const allImages = [...existingImages, ...newImages];
-        const updateData = Object.assign(Object.assign({}, req.body), { import_date: req.body.importDate, origin_country: req.body.originCountry, images: allImages, characteristics: {
-                scientific_name: req.body["characteristics[scientific_name]"],
-                family: req.body["characteristics[family]"],
-                origin: req.body["characteristics[origin]"],
-                growth_habit: req.body["characteristics[growth_habit]"],
-                leaves: req.body["characteristics[leaves]"],
-                flowers: req.body["characteristics[flowers]"],
-                roots: req.body["characteristics[roots]"],
+        const updateData = Object.assign(Object.assign({}, req.body), { characteristics: {
+                scientific_name: req.body.characteristics.scientific_name,
+                family: req.body.characteristics.family,
+                origin: req.body.characteristics.origin,
+                growth_habit: req.body.characteristics.growth_habit,
+                leaves: req.body.characteristics.leaves,
+                flowers: req.body.characteristics.flowers,
+                roots: req.body.characteristics.roots,
             }, meaning: {
-                feng_shui: req.body["meaning[feng_shui]"],
-                placement: req.body["meaning[placement]"],
+                feng_shui: req.body.meaning.feng_shui,
+                placement: req.body.meaning.placement,
             }, care_instructions: {
-                watering: req.body["care_instructions[watering]"],
-                lighting: req.body["care_instructions[lighting]"],
-                temperature: req.body["care_instructions[temperature]"],
-                fertilizing: req.body["care_instructions[fertilizing]"],
-                cleaning: req.body["care_instructions[cleaning]"],
+                watering: req.body.care_instructions.watering,
+                lighting: req.body.care_instructions.lighting,
+                temperature: req.body.care_instructions.temperature,
+                fertilizing: req.body.care_instructions.fertilizing,
+                cleaning: req.body.care_instructions.cleaning,
             }, specifications: {
-                height: req.body["specifications[height]"],
-                pot_size: req.body["specifications[pot_size]"],
-                difficulty: req.body["specifications[difficulty]"],
-                lighting_requirements: req.body["specifications[lighting_requirements]"],
-                water_needs: req.body["specifications[water_needs]"],
-            } });
+                height: req.body.specifications.height,
+                pot_size: req.body.specifications.pot_size,
+                difficulty: req.body.specifications.difficulty,
+                lighting_requirements: req.body.specifications.lighting_requirements,
+                water_needs: req.body.specifications.water_needs,
+            }, images: allImages, import_date: req.body.import_date, origin_country: req.body.origin_country });
+        console.log(updateData);
         const updatedPlant = yield plant_model_1.default.findOneAndUpdate({ sku }, updateData, {
             new: true,
             runValidators: true,
