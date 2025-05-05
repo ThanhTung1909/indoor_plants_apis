@@ -331,10 +331,7 @@ export const deleteFavouriteTree = async (
   }
 };
 
-export const myFavouriteFilter = async (
-  req: RequestWithUser,
-  res: Response
-) => {
+export const myFavouriteFilter = async (req: RequestWithUser,res: Response) => {
   try {
     const userId: string = req.params.userId;
     const user = (await User.findById(userId).select("myFavouriteTree")) as {
@@ -346,29 +343,52 @@ export const myFavouriteFilter = async (
       (id) => new mongoose.Types.ObjectId(id)
     );
 
-    const currentLimit = 8;
-    const { page = 1, category, sort } = req.query;
+    const currentLimit = 6;
+
+    const { page, category, sort ,maxPrice,maxHeight,lighting} = req.query;
+
+  
     const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
-    const find: any = {};
-    const sortVa: any = {};
-
-    console.log(req.query);
-
-    console.log("category", category);
-    console.log("sort", sort);
+    const find = {};
+    const sortVa = {};
 
     if (category) {
-      find["category"] = category;
+      find["category"] = new mongoose.Types.ObjectId(category as string);
     }
-    if (key && value) {
-      sortVa[key] = value === "asc" ? 1 : -1; // Chuẩn hóa sort
+    if (key !== "" && value !== "") {
+      sortVa[key] = value;
+    }
+    if (maxPrice) {
+      find["price"] = { $lte: parseInt(maxPrice as string) };
+    }
+    if (lighting == 'anhsangmanh') {
+      find["care_instructions.lighting"] = { $regex: "mạnh", $options: "i" };
+    }
+    else if (lighting == 'anhsangyeu') {
+      find["care_instructions.lighting"] = { $regex: "tán xạ", $options: "i" };
+    }
+    else if (lighting == 'giantiep') {
+      find["care_instructions.lighting"] = { $regex: "gián tiếp,", $options: "i" };
     }
 
-    const data = await Plans.find({ _id: { $in: objectIds }, ...find });
+
+    let data = await Plans.find({ _id: { $in: objectIds }, ...find });
+
+    if(maxHeight){
+      const filteredData = data.filter(p => {
+        const numbers = p.specifications.height?.match(/\d+/g);
+        const maxInText = numbers ? Math.max(...numbers.map(Number)) : 0;
+        return maxInText <= parseInt(maxHeight as string);
+      });
+      data = filteredData;
+    }
+
+
     const pagination = paginationHelper(
-      parseInt(page as string),
+      parseInt(page as string) || 1,
       currentLimit,
-      data.length
+      data.length,
+
     );
 
     const result = await Plans.find({ ...find, _id: { $in: objectIds } })
@@ -376,9 +396,6 @@ export const myFavouriteFilter = async (
       .skip(pagination.skip)
       .limit(currentLimit);
 
-    console.log(find);
-    console.log(sortVa);
-    console.log(pagination);
 
     res.status(200).json({
       success: true,

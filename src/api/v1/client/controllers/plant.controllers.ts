@@ -3,6 +3,7 @@ import Plant from "../../../../models/plant.model";
 import Category from "../../../../models/category.model";
 import { console } from "inspector";
 import paginationHelper from "../../../../helper/pagination.helpler";
+import mongoose from "mongoose";
 
 // [GET] /api/v1/plants
 
@@ -143,27 +144,53 @@ export const getPlantsByLimit = async (req: Request, res: Response) => {
 // [GET] /api/v1/plants/filter/:page/:category/:sort
 export const plantsFilter = async (req: Request, res: Response) => {
   try {
-    const currentLimit = 8;
+    const currentLimit = 6;
 
-    const { page, category, sort } = req.query;
+    const { page, category, sort ,maxPrice,maxHeight,lighting} = req.query;
 
+  
     const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
     const find = {};
     const sortVa = {};
 
     if (category) {
-      find["category"] = category;
+      find["category"] = new mongoose.Types.ObjectId(category as string);
     }
     if (key !== "" && value !== "") {
       sortVa[key] = value;
     }
+    if (maxPrice) {
+      find["price"] = { $lte: parseInt(maxPrice as string) };
+    }
+    if (lighting == 'anhsangmanh') {
+      find["care_instructions.lighting"] = { $regex: "mạnh", $options: "i" };
+    }
+    else if (lighting == 'anhsangyeu') {
+      find["care_instructions.lighting"] = { $regex: "tán xạ", $options: "i" };
+    }
+    else if (lighting == 'giantiep') {
+      find["care_instructions.lighting"] = { $regex: "gián tiếp,", $options: "i" };
+    }
 
-    const data = await Plant.find(find);
+
+
+
+    let data = await Plant.find(find);
+
+    if(maxHeight){
+      const filteredData = data.filter(p => {
+        const numbers = p.specifications.height?.match(/\d+/g);
+        const maxInText = numbers ? Math.max(...numbers.map(Number)) : 0;
+        return maxInText <= parseInt(maxHeight as string);
+      });
+      data = filteredData;
+    }
 
     const pagination = paginationHelper(
-      parseInt(page as string),
+      parseInt(page as string) || 1,
       currentLimit,
-      data.length
+      data.length,
+
     );
 
     const plants = await Plant.find(find)
@@ -171,10 +198,14 @@ export const plantsFilter = async (req: Request, res: Response) => {
       .skip(pagination.skip)
       .limit(currentLimit);
 
+
+
+
     res.status(201).json({
       success: true,
       data: plants,
       pagination: pagination,
+      find : find
     });
   } catch (error) {
     res.status(500).json({

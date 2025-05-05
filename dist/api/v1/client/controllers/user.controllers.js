@@ -318,29 +318,44 @@ const myFavouriteFilter = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const userId = req.params.userId;
         const user = (yield user_model_1.default.findById(userId).select("myFavouriteTree"));
         const objectIds = user.myFavouriteTree.map((id) => new mongoose_1.default.Types.ObjectId(id));
-        const currentLimit = 8;
-        const { page = 1, category, sort } = req.query;
+        const currentLimit = 6;
+        const { page, category, sort, maxPrice, maxHeight, lighting } = req.query;
         const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
         const find = {};
         const sortVa = {};
-        console.log(req.query);
-        console.log("category", category);
-        console.log("sort", sort);
         if (category) {
-            find["category"] = category;
+            find["category"] = new mongoose_1.default.Types.ObjectId(category);
         }
-        if (key && value) {
-            sortVa[key] = value === "asc" ? 1 : -1;
+        if (key !== "" && value !== "") {
+            sortVa[key] = value;
         }
-        const data = yield plant_model_1.default.find(Object.assign({ _id: { $in: objectIds } }, find));
-        const pagination = (0, pagination_helpler_1.default)(parseInt(page), currentLimit, data.length);
+        if (maxPrice) {
+            find["price"] = { $lte: parseInt(maxPrice) };
+        }
+        if (lighting == 'anhsangmanh') {
+            find["care_instructions.lighting"] = { $regex: "mạnh", $options: "i" };
+        }
+        else if (lighting == 'anhsangyeu') {
+            find["care_instructions.lighting"] = { $regex: "tán xạ", $options: "i" };
+        }
+        else if (lighting == 'giantiep') {
+            find["care_instructions.lighting"] = { $regex: "gián tiếp,", $options: "i" };
+        }
+        let data = yield plant_model_1.default.find(Object.assign({ _id: { $in: objectIds } }, find));
+        if (maxHeight) {
+            const filteredData = data.filter(p => {
+                var _a;
+                const numbers = (_a = p.specifications.height) === null || _a === void 0 ? void 0 : _a.match(/\d+/g);
+                const maxInText = numbers ? Math.max(...numbers.map(Number)) : 0;
+                return maxInText <= parseInt(maxHeight);
+            });
+            data = filteredData;
+        }
+        const pagination = (0, pagination_helpler_1.default)(parseInt(page) || 1, currentLimit, data.length);
         const result = yield plant_model_1.default.find(Object.assign(Object.assign({}, find), { _id: { $in: objectIds } }))
             .sort(sortVa)
             .skip(pagination.skip)
             .limit(currentLimit);
-        console.log(find);
-        console.log(sortVa);
-        console.log(pagination);
         res.status(200).json({
             success: true,
             data: result,
