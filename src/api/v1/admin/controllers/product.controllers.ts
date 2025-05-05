@@ -6,43 +6,46 @@ import mongoose from "mongoose";
 // [POST] /api/v1/admin/product/create
 export const create = async (req: Request, res: Response, next) => {
   try {
+    
+
     const plantData = {
       ...req.body,
 
       characteristics: {
-        scientific_name: req.body["characteristics[scientific_name]"],
-        family: req.body["characteristics[family]"],
-        origin: req.body["characteristics[origin]"],
-        growth_habit: req.body["characteristics[growth_habit]"],
-        leaves: req.body["characteristics[leaves]"],
-        flowers: req.body["characteristics[flowers]"],
-        roots: req.body["characteristics[roots]"],
+        scientific_name: req.body.characteristics.scientific_name,
+        family: req.body.characteristics.family,
+        origin: req.body.characteristics.origin,
+        growth_habit: req.body.characteristics.growth_habit,
+        leaves: req.body.characteristics.leaves,
+        flowers: req.body.characteristics.flowers,
+        roots: req.body.characteristics.roots,
       },
       meaning: {
-        feng_shui: req.body["meaning[feng_shui]"],
-        placement: req.body["meaning[placement]"],
+        feng_shui: req.body.meaning.feng_shui,
+        placement: req.body.meaning.placement,
       },
       care_instructions: {
-        watering: req.body["care_instructions[watering]"],
-        lighting: req.body["care_instructions[lighting]"],
-        temperature: req.body["care_instructions[temperature]"],
-        fertilizing: req.body["care_instructions[fertilizing]"],
-        cleaning: req.body["care_instructions[cleaning]"],
+        watering: req.body.care_instructions.watering,
+        lighting: req.body.care_instructions.lighting,
+        temperature: req.body.care_instructions.temperature,
+        fertilizing: req.body.care_instructions.fertilizing,
+        cleaning: req.body.care_instructions.cleaning,
       },
       specifications: {
-        height: req.body["specifications[height]"],
-        pot_size: req.body["specifications[pot_size]"],
-        difficulty: req.body["specifications[difficulty]"],
-        lighting_requirements:
-          req.body["specifications[lighting_requirements]"],
-        water_needs: req.body["specifications[water_needs]"],
+        height: req.body.specifications.height,
+        pot_size: req.body.specifications.pot_size,
+        difficulty: req.body.specifications.difficulty,
+        lighting_requirements: req.body.specifications.lighting_requirements,
+        water_needs: req.body.specifications.water_needs,
       },
       images: req.body.images,
-      import_date: req.body.importDate,
-      origin_country: req.body.originCountry,
+      import_date: req.body.import_date,
+      origin_country: req.body.origin_country,
     };
+    
 
     const errors = validatePlant(plantData);
+    console.log(errors);
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({
         success: false,
@@ -50,7 +53,6 @@ export const create = async (req: Request, res: Response, next) => {
         errors,
       });
     }
-    console.log(errors);
 
     const newPlant = new Plant(plantData);
 
@@ -84,38 +86,41 @@ export const editProductBySku = async (req: Request, res: Response, next) => {
 
     const updateData = {
       ...req.body,
-      import_date: req.body.importDate,
-      origin_country: req.body.originCountry,
-      images: allImages,
+
       characteristics: {
-        scientific_name: req.body["characteristics[scientific_name]"],
-        family: req.body["characteristics[family]"],
-        origin: req.body["characteristics[origin]"],
-        growth_habit: req.body["characteristics[growth_habit]"],
-        leaves: req.body["characteristics[leaves]"],
-        flowers: req.body["characteristics[flowers]"],
-        roots: req.body["characteristics[roots]"],
+        scientific_name: req.body.characteristics.scientific_name,
+        family: req.body.characteristics.family,
+        origin: req.body.characteristics.origin,
+        growth_habit: req.body.characteristics.growth_habit,
+        leaves: req.body.characteristics.leaves,
+        flowers: req.body.characteristics.flowers,
+        roots: req.body.characteristics.roots,
       },
       meaning: {
-        feng_shui: req.body["meaning[feng_shui]"],
-        placement: req.body["meaning[placement]"],
+        feng_shui: req.body.meaning.feng_shui,
+        placement: req.body.meaning.placement,
       },
       care_instructions: {
-        watering: req.body["care_instructions[watering]"],
-        lighting: req.body["care_instructions[lighting]"],
-        temperature: req.body["care_instructions[temperature]"],
-        fertilizing: req.body["care_instructions[fertilizing]"],
-        cleaning: req.body["care_instructions[cleaning]"],
+        watering: req.body.care_instructions.watering,
+        lighting: req.body.care_instructions.lighting,
+        temperature: req.body.care_instructions.temperature,
+        fertilizing: req.body.care_instructions.fertilizing,
+        cleaning: req.body.care_instructions.cleaning,
       },
       specifications: {
-        height: req.body["specifications[height]"],
-        pot_size: req.body["specifications[pot_size]"],
-        difficulty: req.body["specifications[difficulty]"],
-        lighting_requirements:
-          req.body["specifications[lighting_requirements]"],
-        water_needs: req.body["specifications[water_needs]"],
+        height: req.body.specifications.height,
+        pot_size: req.body.specifications.pot_size,
+        difficulty: req.body.specifications.difficulty,
+        lighting_requirements: req.body.specifications.lighting_requirements,
+        water_needs: req.body.specifications.water_needs,
       },
+      images: allImages,
+      import_date: req.body.import_date,
+      origin_country: req.body.origin_country,
     };
+
+    console.log(updateData);
+    
 
     const updatedPlant = await Plant.findOneAndUpdate({ sku }, updateData, {
       new: true,

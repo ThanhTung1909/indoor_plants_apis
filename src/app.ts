@@ -15,12 +15,7 @@ const app: Express = express();
 const port: Number | String = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+app.use(cors());
 
 mainV1Routes(app);
 mainV1AdminRoutes(app);

@@ -3,6 +3,7 @@ import Plant from "../../../../models/plant.model";
 import Category from "../../../../models/category.model";
 import { console } from "inspector";
 import paginationHelper from "../../../../helper/pagination.helpler";
+import mongoose from "mongoose";
 
 // [GET] /api/v1/plants
 
@@ -27,14 +28,14 @@ export const index = async (req: RequestWithUser, res: Response) => {
   }
 };
 
-
 // [GET] /api/v1/plants/category/:categoryId
 
 export const getPlantsByCategory = async (req: Request, res: Response) => {
   try {
     const { categoryId } = req.params;
 
-    const plants = await Plant.find({ category: categoryId });
+    const categoryIdObjectId = new mongoose.Types.ObjectId(categoryId);
+    const plants = await Plant.find({ category: categoryIdObjectId });
 
     res.status(201).json({
       success: true,

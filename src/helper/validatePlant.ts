@@ -78,14 +78,5 @@ export const validatePlant = (data: PlantInput): ValidationErrors => {
     errors.images = "At least one image is required.";
   }
 
-  // Optional checks for nested fields
-  if (data.characteristics && typeof data.characteristics !== "object") {
-    errors.characteristics = "Characteristics must be an object.";
-  }
-
-  if (data.specifications && typeof data.specifications !== "object") {
-    errors.specifications = "Specifications must be an object.";
-  }
-
   return errors;
 };
