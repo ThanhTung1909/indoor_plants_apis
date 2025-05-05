@@ -4,6 +4,8 @@ import { plantRoutes } from "./plant.route";
 import { userRoutes } from "./user.route";
 import {cartRouter} from "./cart.router"
 import { orderRouter } from "./order.router";
+import { reviewRouter } from "./review.router";
+
 
 import * as authMiddleware from "../../../../middlewares/auth.middleware"
 
@@ -14,6 +16,7 @@ const mainV1Routes = (app: Express) => {
     app.use(version + "/user", userRoutes);
     app.use(version + "/cart", cartRouter);
     app.use(version + "/order", orderRouter);
+    app.use(version + "/review", reviewRouter);
     // app.use(version + "/plants", plantRoutes)
     // app.use(version + "/user", userRoutes)
     // app.use(version + "/cart", authMiddleware.requireAuth, cartRouter)

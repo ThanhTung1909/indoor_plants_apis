@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.plantsFilter = exports.getPlantsByLimit = exports.getCategories = exports.getPlantDetail = exports.getPlantsByCategory = exports.addPlant = exports.index = void 0;
+exports.plantsFilter = exports.getPlantsByLimit = exports.getCategories = exports.getPlantDetail = exports.getPlantsByCategory = exports.index = void 0;
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
 const category_model_1 = __importDefault(require("../../../../models/category.model"));
 const pagination_helpler_1 = __importDefault(require("../../../../helper/pagination.helpler"));
@@ -34,26 +34,6 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.index = index;
-const addPlant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const planData = req.body;
-        const newPlan = new plant_model_1.default(planData);
-        yield newPlan.save();
-        res.status(201).json({
-            success: true,
-            message: "Add Plant SuccessFully",
-            data: newPlan,
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Lỗi khi thêm cây mới",
-            error: error.message,
-        });
-    }
-});
-exports.addPlant = addPlant;
 const getPlantsByCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { categoryId } = req.params;

@@ -32,26 +32,16 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const body_parser_1 = __importDefault(require("body-parser"));
-const cors_1 = __importDefault(require("cors"));
-dotenv_1.default.config();
-const database = __importStar(require("./config/database"));
-const index_route_1 = __importDefault(require("./api/v1/client/routes/index.route"));
-const index_routes_1 = __importDefault(require("./api/v1/admin/routes/index.routes"));
-dotenv_1.default.config();
-database.connect();
-const app = (0, express_1.default)();
-const port = process.env.PORT || 3000;
-app.use(body_parser_1.default.json());
-app.use((0, cors_1.default)());
-(0, index_route_1.default)(app);
-(0, index_routes_1.default)(app);
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
-});
+exports.productRoutes = void 0;
+const express_1 = require("express");
+const productController = __importStar(require("../controllers/product.controllers"));
+const multer_1 = require("../../../../middlewares/multer");
+const uploadCloud_middleware_1 = require("../../../../middlewares/uploadCloud.middleware");
+const router = (0, express_1.Router)();
+router.post("/create", multer_1.upload.array("images"), uploadCloud_middleware_1.uploadImageToCloudinary, productController.create);
+router.put("/edit/:sku", multer_1.upload.array("images"), uploadCloud_middleware_1.uploadImageToCloudinary, productController.editProductBySku);
+router.delete("/deleted/:sku", productController.deleteProductBySku);
+router.get("/all", productController.getAllProduct);
+router.get("/detail/:sku", productController.getDetailBySku);
+exports.productRoutes = router;

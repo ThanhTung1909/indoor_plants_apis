@@ -121,26 +121,47 @@ export const getOrderDetail = async (req: Request, res: Response) => {
 
 
 // [PATCH] /api/v1/orders/:orderId/status
+// [PATCH] /api/v1/orders/:orderId/status
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
+    // Lấy orderId từ params (URL) thay vì body
     const { orderId } = req.params;
     const { status } = req.body;
-
-    const allowedStatus = ["pending", "processing", "shipped", "delivered", "cancelled"];
+    const cleanOrderId = orderId.trim(); 
+    console.log("Order ID:", orderId);
+    console.log("New Status:", status);
+    const allowedStatus = ["pending", "processing", "shipped", "delivered", "cancelled", "received"];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status value' });
     }
 
-    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+    // Cập nhật trạng thái đơn hàng
+    const order = await Order.findByIdAndUpdate(cleanOrderId, { status }, { new: true });
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
+    // Nếu trạng thái là "cancelled" (hủy đơn), xử lý hoàn lại số lượng sản phẩm trong kho
+    if (status === "cancelled") {
+      for (const item of order.orderItems) {
+        await Plant.findByIdAndUpdate(item.productId, {
+          $inc: { stock_quantity: item.quantity }, // Tăng lại số lượng sản phẩm trong kho
+        });
+      }
+      // Có thể thêm logic hoàn tiền hoặc gửi thông báo nếu cần
+    }
+
+    // Nếu trạng thái là "received" (đã nhận), có thể thêm hành động xử lý
+    if (status === "received") {
+      // Ví dụ: Gửi thông báo hoặc ghi nhận hành động nào đó
+      console.log(`Order ${orderId} has been received.`);
+    }
+
     return res.status(200).json({ success: true, message: 'Order status updated', data: order });
 
   } catch (error: any) {
-    console.error(error);
+    console.error("Error while updating order status:", error);
     return res.status(500).json({ success: false, message: 'Error updating status', error: error.message });
   }
 };
