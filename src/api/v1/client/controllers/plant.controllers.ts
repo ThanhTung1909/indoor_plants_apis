@@ -3,7 +3,6 @@ import Plant from "../../../../models/plant.model";
 import Category from "../../../../models/category.model";
 import { console } from "inspector";
 import paginationHelper from "../../../../helper/pagination.helpler";
-import mongoose from "mongoose";
 
 // [GET] /api/v1/plants
 
@@ -23,6 +22,28 @@ export const index = async (req: RequestWithUser, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Lỗi khi lấy danh sách cây",
+      error: error.message,
+    });
+  }
+};
+
+// [POST] /api/v1/plants/add
+export const addPlant = async (req: Request, res: Response) => {
+  try {
+    const planData = req.body;
+    const newPlan = new Plant(planData);
+
+    await newPlan.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Add Plant SuccessFully",
+      data: newPlan,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi thêm cây mới",
       error: error.message,
     });
   }
