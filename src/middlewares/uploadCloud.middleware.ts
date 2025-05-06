@@ -38,7 +38,16 @@ export const uploadImageToCloudinary = async (
     );
 
     const imageUrls = await Promise.all(uploadPromises);
-    req.body.images = imageUrls;
+
+    
+    let existingImages = req.body.images || [];
+
+    if (typeof existingImages === "string") {
+      existingImages = [existingImages]; 
+    }
+
+    req.body.images = [...existingImages, ...imageUrls];
+
     next();
   } catch (error: any) {
     console.error("Cloudinary upload error:", error);

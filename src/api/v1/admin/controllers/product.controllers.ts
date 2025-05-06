@@ -6,8 +6,6 @@ import mongoose from "mongoose";
 // [POST] /api/v1/admin/product/create
 export const create = async (req: Request, res: Response, next) => {
   try {
-    
-
     const plantData = {
       ...req.body,
 
@@ -42,7 +40,6 @@ export const create = async (req: Request, res: Response, next) => {
       import_date: req.body.import_date,
       origin_country: req.body.origin_country,
     };
-    
 
     const errors = validatePlant(plantData);
     console.log(errors);
@@ -53,6 +50,7 @@ export const create = async (req: Request, res: Response, next) => {
         errors,
       });
     }
+    console.log("plant data", plantData);
 
     const newPlant = new Plant(plantData);
 
@@ -76,17 +74,17 @@ export const create = async (req: Request, res: Response, next) => {
 export const editProductBySku = async (req: Request, res: Response, next) => {
   try {
     const { sku } = req.params;
-
-    const existingImages = req.body.existingImages || [];
-
-    // Lấy danh sách ảnh mới đã upload (multer)
-    const newImages = req.body.images;
-
-    const allImages = [...existingImages, ...newImages];
+    console.log("body", req.body);
 
     const updateData = {
-      ...req.body,
-
+      sku: req.body.sku,
+      title: req.body.title,
+      category: req.body.category,
+      short_description: req.body.short_description,
+      description: req.body.description,
+      price: req.body.price,
+      discount: req.body.discount,
+      stock: req.body.stock,
       characteristics: {
         scientific_name: req.body.characteristics.scientific_name,
         family: req.body.characteristics.family,
@@ -114,13 +112,12 @@ export const editProductBySku = async (req: Request, res: Response, next) => {
         lighting_requirements: req.body.specifications.lighting_requirements,
         water_needs: req.body.specifications.water_needs,
       },
-      images: allImages,
+      images: req.body.images,
       import_date: req.body.import_date,
       origin_country: req.body.origin_country,
     };
 
-    console.log(updateData);
-    
+    console.log("update", updateData);
 
     const updatedPlant = await Plant.findOneAndUpdate({ sku }, updateData, {
       new: true,
