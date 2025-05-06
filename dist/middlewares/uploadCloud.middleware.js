@@ -35,7 +35,11 @@ const uploadImageToCloudinary = (req, res, next) => __awaiter(void 0, void 0, vo
             streamifier_1.default.createReadStream(file.buffer).pipe(stream);
         }));
         const imageUrls = yield Promise.all(uploadPromises);
-        req.body.images = imageUrls;
+        let existingImages = req.body.images || [];
+        if (typeof existingImages === "string") {
+            existingImages = [existingImages];
+        }
+        req.body.images = [...existingImages, ...imageUrls];
         next();
     }
     catch (error) {
