@@ -119,10 +119,18 @@ exports.getPlantsByLimit = getPlantsByLimit;
 const plantsFilter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const currentLimit = 6;
-        const { page, category, sort, maxPrice, maxHeight, lighting } = req.query;
+        const { keyword, page, category, sort, maxPrice, maxHeight, lighting } = req.query;
         const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
         const find = {};
         const sortVa = {};
+        if (keyword) {
+            const keywords = keyword.split(/\++/).join(" ");
+            find["$or"] = [
+                { title: { $regex: keywords, $options: "i" } },
+                { short_description: { $regex: keywords, $options: "i" } },
+                { description: { $regex: keywords, $options: "i" } },
+            ];
+        }
         if (category) {
             find["category"] = new mongoose_1.default.Types.ObjectId(category);
         }
