@@ -108,16 +108,11 @@ const editProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                 difficulty: req.body.specifications.difficulty,
                 lighting_requirements: req.body.specifications.lighting_requirements,
                 water_needs: req.body.specifications.water_needs,
-<<<<<<< HEAD
-            }, images: allImages, import_date: req.body.import_date, origin_country: req.body.origin_country });
-=======
             },
             images: req.body.images,
             import_date: req.body.import_date,
             origin_country: req.body.origin_country,
         };
-        console.log("update", updateData);
->>>>>>> 2417799c1d6aa05f4757c46a23c39084999ecc87
         const updatedPlant = yield plant_model_1.default.findOneAndUpdate({ sku }, updateData, {
             new: true,
             runValidators: true,
