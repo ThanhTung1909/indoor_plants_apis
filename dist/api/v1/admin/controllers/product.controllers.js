@@ -50,6 +50,7 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 errors,
             });
         }
+        console.log("plant data", plantData);
         const newPlant = new plant_model_1.default(plantData);
         yield newPlant.save();
         res.status(201).json({
@@ -71,10 +72,17 @@ exports.create = create;
 const editProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { sku } = req.params;
-        const existingImages = req.body.existingImages || [];
-        const newImages = req.body.images;
-        const allImages = [...existingImages, ...newImages];
-        const updateData = Object.assign(Object.assign({}, req.body), { characteristics: {
+        console.log("body", req.body);
+        const updateData = {
+            sku: req.body.sku,
+            title: req.body.title,
+            category: req.body.category,
+            short_description: req.body.short_description,
+            description: req.body.description,
+            price: req.body.price,
+            discount: req.body.discount,
+            stock: req.body.stock,
+            characteristics: {
                 scientific_name: req.body.characteristics.scientific_name,
                 family: req.body.characteristics.family,
                 origin: req.body.characteristics.origin,
@@ -82,22 +90,34 @@ const editProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                 leaves: req.body.characteristics.leaves,
                 flowers: req.body.characteristics.flowers,
                 roots: req.body.characteristics.roots,
-            }, meaning: {
+            },
+            meaning: {
                 feng_shui: req.body.meaning.feng_shui,
                 placement: req.body.meaning.placement,
-            }, care_instructions: {
+            },
+            care_instructions: {
                 watering: req.body.care_instructions.watering,
                 lighting: req.body.care_instructions.lighting,
                 temperature: req.body.care_instructions.temperature,
                 fertilizing: req.body.care_instructions.fertilizing,
                 cleaning: req.body.care_instructions.cleaning,
-            }, specifications: {
+            },
+            specifications: {
                 height: req.body.specifications.height,
                 pot_size: req.body.specifications.pot_size,
                 difficulty: req.body.specifications.difficulty,
                 lighting_requirements: req.body.specifications.lighting_requirements,
                 water_needs: req.body.specifications.water_needs,
+<<<<<<< HEAD
             }, images: allImages, import_date: req.body.import_date, origin_country: req.body.origin_country });
+=======
+            },
+            images: req.body.images,
+            import_date: req.body.import_date,
+            origin_country: req.body.origin_country,
+        };
+        console.log("update", updateData);
+>>>>>>> 2417799c1d6aa05f4757c46a23c39084999ecc87
         const updatedPlant = yield plant_model_1.default.findOneAndUpdate({ sku }, updateData, {
             new: true,
             runValidators: true,

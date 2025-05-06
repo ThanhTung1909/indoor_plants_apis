@@ -331,52 +331,64 @@ export const deleteFavouriteTree = async (
   }
 };
 
-export const myFavouriteFilter = async (
-  req: RequestWithUser,
-  res: Response
-) => {
+export const myFavouriteFilter = async (req: RequestWithUser,res: Response) => {
   try {
     const userId: string = req.params.userId;
     const user = (await User.findById(userId).select("myFavouriteTree")) as {
       myFavouriteTree?: string[];
     };
 
-    // if (!user || !(user.myFavouriteTree && user.myFavouriteTree.length)) {
-    //     return res.status(200).json({
-    //         success: true,
-    //         data: [],
-    //         userId : userId,
-    //         pagination: { page: 1, total: 0, totalPage: 0, limit: 8 },
-    //     });
-    // }
 
     const objectIds = user.myFavouriteTree.map(
       (id) => new mongoose.Types.ObjectId(id)
     );
 
-    const currentLimit = 8;
-    const { page = 1, category, sort } = req.query;
+    const currentLimit = 6;
+
+    const { page, category, sort ,maxPrice,maxHeight,lighting} = req.query;
+
+  
     const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
-    const find: any = {};
-    const sortVa: any = {};
-
-    console.log(req.query);
-
-    console.log("category", category);
-    console.log("sort", sort);
+    const find = {};
+    const sortVa = {};
 
     if (category) {
-      find["category"] = category;
+      find["category"] = new mongoose.Types.ObjectId(category as string);
     }
-    if (key && value) {
-      sortVa[key] = value === "asc" ? 1 : -1; // Chuẩn hóa sort
+    if (key !== "" && value !== "") {
+      sortVa[key] = value;
+    }
+    if (maxPrice) {
+      find["price"] = { $lte: parseInt(maxPrice as string) };
+    }
+    if (lighting == 'anhsangmanh') {
+      find["care_instructions.lighting"] = { $regex: "mạnh", $options: "i" };
+    }
+    else if (lighting == 'anhsangyeu') {
+      find["care_instructions.lighting"] = { $regex: "tán xạ", $options: "i" };
+    }
+    else if (lighting == 'giantiep') {
+      find["care_instructions.lighting"] = { $regex: "gián tiếp,", $options: "i" };
     }
 
-    const data = await Plans.find({ _id: { $in: objectIds }, ...find });
+
+    let data = await Plans.find({ _id: { $in: objectIds }, ...find });
+
+    if(maxHeight){
+      const filteredData = data.filter(p => {
+        const numbers = p.specifications.height?.match(/\d+/g);
+        const maxInText = numbers ? Math.max(...numbers.map(Number)) : 0;
+        return maxInText <= parseInt(maxHeight as string);
+      });
+      data = filteredData;
+    }
+
+
     const pagination = paginationHelper(
-      parseInt(page as string),
+      parseInt(page as string) || 1,
       currentLimit,
-      data.length
+      data.length,
+
     );
 
     const result = await Plans.find({ ...find, _id: { $in: objectIds } })
@@ -384,9 +396,6 @@ export const myFavouriteFilter = async (
       .skip(pagination.skip)
       .limit(currentLimit);
 
-    console.log(find);
-    console.log(sortVa);
-    console.log(pagination);
 
     res.status(200).json({
       success: true,
@@ -417,7 +426,7 @@ interface Address {
 export const updateUser = async (req: RequestWithUser, res: Response) => {
   try {
     const token: string = req.body.token;
-    const { username, email, phone, address }: { username: string, email: string, phone: string, address: Address[] } = req.body;
+    const { username, email, phone, avatar }: { username: string, email: string, phone: string,avatar : string } = req.body;
 
     const user = await User.findOne({ token: token });
     if (!user) {
@@ -437,22 +446,13 @@ export const updateUser = async (req: RequestWithUser, res: Response) => {
       }
     }
 
-    if (address) {
-      const defaultAddressIndex = address.findIndex((addr: Address) => addr.isDefault === true);
-      if (defaultAddressIndex !== -1) {
-        address.forEach((addr: Address, index: number) => {
-          if (index !== defaultAddressIndex) {
-            addr.isDefault = false;
-          }
-        });
-      }
-    }
+   
 
     const updatedData: any = {
       username: username || user.username,
       email: email || user.email,
-      phone: phone || user.phone, 
-      address: address || user.address,
+      phone: phone || user.phone,
+      avatar: avatar || user.avatar,
     };
 
     const updatedUser = await User.findOneAndUpdate(
@@ -469,7 +469,7 @@ export const updateUser = async (req: RequestWithUser, res: Response) => {
         data: updatedUser,
       });
 
-      console.log(updateUser)
+
     } else {
       res.status(400).json({
         success: false,
@@ -528,3 +528,71 @@ export const updatePassword = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export const addAddress = async (req: Request, res: Response) => {
+  try {
+    const token : string = req.body.token;
+    const { street, ward, district, city, isDefault } = req.body as Address;
+    if(isDefault){
+      await User.updateMany({token : token },{
+        $set: { "address.$[].isDefault": false },
+      });
+    }
+    const address =  await User.updateOne({token : token}, {
+      $push: {
+        address: {
+          street: street,
+          ward: ward,
+          district: district,
+          city: city,
+          isDefault: isDefault || false,
+        },
+      },
+    });
+
+    
+    res.status(200).json({
+      success: true,
+      message: "Thêm địa chỉ thành công",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi thêm địa chỉ",
+    })
+  }
+}
+
+
+export const updateAddress = async (req: Request, res: Response) => {
+  try {
+    const token : string = req.body.token;
+    const { street, ward, district, city, isDefault, id } = req.body;
+    if(isDefault){
+      await User.updateMany({token : token },{
+        $set: { "address.$[].isDefault": false },
+      });
+    }
+    await User.updateOne({token : token, "address._id" : id}, {
+      $set: {
+        "address.$.street": street,
+        "address.$.ward": ward,
+        "address.$.district": district,
+        "address.$.city": city,
+        "address.$.isDefault": isDefault || false,
+      },
+    });
+
+    
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật địa chỉ thành công",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật địa chỉ",
+    })
+  }
+}

@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePassword = exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.resetPassword = exports.forgotPasswordOTP = exports.forgotPassword = exports.login = exports.register = void 0;
+exports.updateAddress = exports.addAddress = exports.updatePassword = exports.updateUser = exports.myFavouriteFilter = exports.deleteFavouriteTree = exports.addFavouriteTree = exports.myFavourite = exports.getUser = exports.resetPassword = exports.forgotPasswordOTP = exports.forgotPassword = exports.login = exports.register = void 0;
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../../../models/user.model"));
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
@@ -318,29 +318,44 @@ const myFavouriteFilter = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const userId = req.params.userId;
         const user = (yield user_model_1.default.findById(userId).select("myFavouriteTree"));
         const objectIds = user.myFavouriteTree.map((id) => new mongoose_1.default.Types.ObjectId(id));
-        const currentLimit = 8;
-        const { page = 1, category, sort } = req.query;
+        const currentLimit = 6;
+        const { page, category, sort, maxPrice, maxHeight, lighting } = req.query;
         const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
         const find = {};
         const sortVa = {};
-        console.log(req.query);
-        console.log("category", category);
-        console.log("sort", sort);
         if (category) {
-            find["category"] = category;
+            find["category"] = new mongoose_1.default.Types.ObjectId(category);
         }
-        if (key && value) {
-            sortVa[key] = value === "asc" ? 1 : -1;
+        if (key !== "" && value !== "") {
+            sortVa[key] = value;
         }
-        const data = yield plant_model_1.default.find(Object.assign({ _id: { $in: objectIds } }, find));
-        const pagination = (0, pagination_helpler_1.default)(parseInt(page), currentLimit, data.length);
+        if (maxPrice) {
+            find["price"] = { $lte: parseInt(maxPrice) };
+        }
+        if (lighting == 'anhsangmanh') {
+            find["care_instructions.lighting"] = { $regex: "mạnh", $options: "i" };
+        }
+        else if (lighting == 'anhsangyeu') {
+            find["care_instructions.lighting"] = { $regex: "tán xạ", $options: "i" };
+        }
+        else if (lighting == 'giantiep') {
+            find["care_instructions.lighting"] = { $regex: "gián tiếp,", $options: "i" };
+        }
+        let data = yield plant_model_1.default.find(Object.assign({ _id: { $in: objectIds } }, find));
+        if (maxHeight) {
+            const filteredData = data.filter(p => {
+                var _a;
+                const numbers = (_a = p.specifications.height) === null || _a === void 0 ? void 0 : _a.match(/\d+/g);
+                const maxInText = numbers ? Math.max(...numbers.map(Number)) : 0;
+                return maxInText <= parseInt(maxHeight);
+            });
+            data = filteredData;
+        }
+        const pagination = (0, pagination_helpler_1.default)(parseInt(page) || 1, currentLimit, data.length);
         const result = yield plant_model_1.default.find(Object.assign(Object.assign({}, find), { _id: { $in: objectIds } }))
             .sort(sortVa)
             .skip(pagination.skip)
             .limit(currentLimit);
-        console.log(find);
-        console.log(sortVa);
-        console.log(pagination);
         res.status(200).json({
             success: true,
             data: result,
@@ -359,7 +374,7 @@ exports.myFavouriteFilter = myFavouriteFilter;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.body.token;
-        const { username, email, phone, address } = req.body;
+        const { username, email, phone, avatar } = req.body;
         const user = yield user_model_1.default.findOne({ token: token });
         if (!user) {
             return res.status(404).json({
@@ -376,21 +391,11 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 });
             }
         }
-        if (address) {
-            const defaultAddressIndex = address.findIndex((addr) => addr.isDefault === true);
-            if (defaultAddressIndex !== -1) {
-                address.forEach((addr, index) => {
-                    if (index !== defaultAddressIndex) {
-                        addr.isDefault = false;
-                    }
-                });
-            }
-        }
         const updatedData = {
             username: username || user.username,
             email: email || user.email,
             phone: phone || user.phone,
-            address: address || user.address,
+            avatar: avatar || user.avatar,
         };
         const updatedUser = yield user_model_1.default.findOneAndUpdate({ token: token }, updatedData, { new: true });
         if (updatedUser) {
@@ -399,7 +404,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 message: "Cập nhật thông tin người dùng thành công",
                 data: updatedUser,
             });
-            console.log(exports.updateUser);
         }
         else {
             res.status(400).json({
@@ -455,3 +459,67 @@ const updatePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updatePassword = updatePassword;
+const addAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = req.body.token;
+        const { street, ward, district, city, isDefault } = req.body;
+        if (isDefault) {
+            yield user_model_1.default.updateMany({ token: token }, {
+                $set: { "address.$[].isDefault": false },
+            });
+        }
+        const address = yield user_model_1.default.updateOne({ token: token }, {
+            $push: {
+                address: {
+                    street: street,
+                    ward: ward,
+                    district: district,
+                    city: city,
+                    isDefault: isDefault || false,
+                },
+            },
+        });
+        res.status(200).json({
+            success: true,
+            message: "Thêm địa chỉ thành công",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi khi thêm địa chỉ",
+        });
+    }
+});
+exports.addAddress = addAddress;
+const updateAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = req.body.token;
+        const { street, ward, district, city, isDefault, id } = req.body;
+        if (isDefault) {
+            yield user_model_1.default.updateMany({ token: token }, {
+                $set: { "address.$[].isDefault": false },
+            });
+        }
+        yield user_model_1.default.updateOne({ token: token, "address._id": id }, {
+            $set: {
+                "address.$.street": street,
+                "address.$.ward": ward,
+                "address.$.district": district,
+                "address.$.city": city,
+                "address.$.isDefault": isDefault || false,
+            },
+        });
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật địa chỉ thành công",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi khi cập nhật địa chỉ",
+        });
+    }
+});
+exports.updateAddress = updateAddress;

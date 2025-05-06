@@ -40,6 +40,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
+dotenv_1.default.config();
 const database = __importStar(require("./config/database"));
 const index_route_1 = __importDefault(require("./api/v1/client/routes/index.route"));
 const index_routes_1 = __importDefault(require("./api/v1/admin/routes/index.routes"));
