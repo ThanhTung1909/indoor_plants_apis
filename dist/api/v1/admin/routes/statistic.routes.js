@@ -38,4 +38,7 @@ const express_1 = require("express");
 const statisticControllers = __importStar(require("../controllers/statistic.controllers"));
 const router = (0, express_1.Router)();
 router.get("/summary", statisticControllers.getPlantOrderSummary);
+router.get("/order-status", statisticControllers.getOrderStatus);
+router.get("/activities", statisticControllers.getRecentUserActivities);
+router.get("/overview", statisticControllers.getOverview);
 exports.statisticRoutes = router;

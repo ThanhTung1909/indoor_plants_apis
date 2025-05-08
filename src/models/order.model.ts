@@ -20,17 +20,23 @@ export interface IOrder extends Document {
   shippingFee?: number;
   deliveryDate?: Date;
   note?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const OrderSchema: Schema<IOrder> = new Schema(
   {
-    UserId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    UserId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     orderItems: [
       {
-        productId: { type: Schema.Types.ObjectId, ref: 'Plant', required: true },
+        productId: {
+          type: Schema.Types.ObjectId,
+          ref: "Plant",
+          required: true,
+        },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
-      }
+      },
     ],
     receiverName: { type: String, required: true },
     receiverEmail: { type: String, required: true },
@@ -61,5 +67,5 @@ const OrderSchema: Schema<IOrder> = new Schema(
   }
 );
 
-const Order = mongoose.model<IOrder>('Order', OrderSchema, 'orders');
+const Order = mongoose.model<IOrder>("Order", OrderSchema, "orders");
 export default Order;
