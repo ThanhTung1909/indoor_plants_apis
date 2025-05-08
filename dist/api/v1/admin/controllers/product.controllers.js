@@ -113,7 +113,6 @@ const editProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             import_date: req.body.import_date,
             origin_country: req.body.origin_country,
         };
-        console.log("update", updateData);
         const updatedPlant = yield plant_model_1.default.findOneAndUpdate({ sku }, updateData, {
             new: true,
             runValidators: true,
