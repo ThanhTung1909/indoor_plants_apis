@@ -33,33 +33,11 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const BlogSchema = new mongoose_1.Schema({
-    title: { type: String, required: true },
-    content: { type: String, required: true },
-    summary: { type: String, required: true },
-    image: { type: String },
-    posting_date: { type: Date, default: Date.now },
-    views: { type: Number, default: 0 },
-    blog_category: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "BlogCategory",
-        required: true,
-    },
-    sections: [
-        {
-            title: { type: String, required: true },
-            content: { type: String, required: true },
-            subSections: [
-                {
-                    title: { type: String, required: true },
-                    content: { type: String, required: true },
-                },
-            ],
-        },
-    ],
-}, {
-    timestamps: true,
-});
-const Blog = mongoose_1.default.model("Blog", BlogSchema, "blog");
-exports.default = Blog;
+exports.blogRoutes = void 0;
+const express_1 = require("express");
+const blogControllers = __importStar(require("../controllers/blog.controllers"));
+const router = (0, express_1.Router)();
+router.get("/category/all", blogControllers.getAllBlogCategory);
+router.get("/all", blogControllers.getAll);
+router.get("/detail/:id", blogControllers.getBlogById);
+exports.blogRoutes = router;
