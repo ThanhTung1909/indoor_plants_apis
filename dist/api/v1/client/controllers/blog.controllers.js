@@ -24,10 +24,16 @@ const getAllBlogCategory = (req, res, next) => __awaiter(void 0, void 0, void 0,
                 message: "Lấy danh sách danh mục blog thất bại",
             });
         }
+        const categoriesWithCount = yield Promise.all(blogCategories.map((category) => __awaiter(void 0, void 0, void 0, function* () {
+            const count = yield blog_model_1.default.countDocuments({
+                blog_category: category._id,
+            });
+            return Object.assign(Object.assign({}, category.toObject()), { blogCount: count });
+        })));
         res.status(200).json({
             success: true,
             message: "Lấy danh sách danh mục blog thành công",
-            blogCategories: blogCategories,
+            blogCategories: categoriesWithCount,
         });
     }
     catch (error) {

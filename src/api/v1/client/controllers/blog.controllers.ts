@@ -13,10 +13,22 @@ export const getAllBlogCategory = async (req: Request, res: Response, next) => {
       });
     }
 
+    const categoriesWithCount = await Promise.all(
+      blogCategories.map(async (category) => {
+        const count = await Blog.countDocuments({
+          blog_category: category._id,
+        });
+        return {
+          ...category.toObject(),
+          blogCount: count,
+        };
+      })
+    );
+
     res.status(200).json({
       success: true,
       message: "Lấy danh sách danh mục blog thành công",
-      blogCategories: blogCategories,
+      blogCategories: categoriesWithCount,
     });
   } catch (error) {
     res.status(500).json({
