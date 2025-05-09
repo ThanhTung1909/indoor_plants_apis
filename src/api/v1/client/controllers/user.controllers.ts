@@ -349,7 +349,7 @@ export const myFavouriteFilter = async (req: RequestWithUser,res: Response) => {
 
   
     const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
-    const find = {};
+    const find = {deleted : false};
     const sortVa = {};
 
     if (category) {
