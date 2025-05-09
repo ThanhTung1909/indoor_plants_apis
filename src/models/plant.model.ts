@@ -29,6 +29,7 @@ interface IPlant extends Document {
   images: string[];
   price: number;
   discount: string;
+  deleted: boolean;
   specifications: {
     height: string;
     pot_size: string;
