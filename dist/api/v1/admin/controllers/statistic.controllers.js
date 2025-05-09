@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTopSellingProducts = exports.getOverview = exports.getRecentUserActivities = exports.getOrderStatus = exports.getPlantOrderSummary = void 0;
+exports.getTrendingPlants = exports.getTopSellingProducts = exports.getOverview = exports.getRecentUserActivities = exports.getOrderStatus = exports.getPlantOrderSummary = void 0;
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
 const order_model_1 = __importDefault(require("../../../../models/order.model"));
 const date_fns_1 = require("date-fns");
@@ -278,3 +278,48 @@ const getTopSellingProducts = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getTopSellingProducts = getTopSellingProducts;
+const getTrendingPlants = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const trending = yield order_model_1.default.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $group: {
+                    _id: "$orderItems.productId",
+                    totalSold: { $sum: "$orderItems.quantity" },
+                },
+            },
+            { $sort: { totalSold: -1 } },
+            { $limit: 5 },
+            {
+                $lookup: {
+                    from: "plants",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "plant",
+                },
+            },
+            { $unwind: "$plant" },
+            {
+                $project: {
+                    _id: 0,
+                    id: "$plant._id",
+                    sku: "$plant.sku",
+                    title: "$plant.title",
+                    content: "$plant.short_description",
+                    image: { $arrayElemAt: ["$plant.images", 0] },
+                    price: "$plant.price",
+                    totalSold: 1,
+                },
+            },
+        ]);
+        res.status(200).json({
+            success: true,
+            data: trending,
+        });
+    }
+    catch (error) {
+        console.error("Trending plant error:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+});
+exports.getTrendingPlants = getTrendingPlants;

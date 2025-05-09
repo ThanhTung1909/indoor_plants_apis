@@ -4,6 +4,7 @@ import Category from "../../../../models/category.model";
 import { console } from "inspector";
 import paginationHelper from "../../../../helper/pagination.helpler";
 import mongoose from "mongoose";
+import Order from "../../../../models/order.model";
 
 // [GET] /api/v1/plants
 
@@ -119,14 +120,110 @@ export const getPlantsByLimit = async (req: Request, res: Response) => {
   }
 };
 
+// [GET] /api/v1/plants/trending
+export const getTrendingPlants = async (req: Request, res: Response) => {
+  try {
+    const trending = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.productId",
+          totalSold: { $sum: "$orderItems.quantity" },
+        },
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "plants",
+          localField: "_id",
+          foreignField: "_id",
+          as: "plant",
+        },
+      },
+      { $unwind: "$plant" },
+      {
+        $project: {
+          _id: 0,
+          id: "$plant._id",
+          sku: "$plant.sku",
+          title: "$plant.title",
+          content: "$plant.short_description",
+          image: { $arrayElemAt: ["$plant.images", 0] },
+          price: "$plant.price",
+          totalSold: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: trending,
+    });
+  } catch (error) {
+    console.error("Trending plant error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+// [GET] /api/v1/plants/top-selling
+export const getTopSellingProducts = async (req: Request, res: Response) => {
+  try {
+    const topProducts = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.productId",
+          totalSold: { $sum: "$orderItems.quantity" },
+        },
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "plants",
+          localField: "_id",
+          foreignField: "_id",
+          as: "plant",
+        },
+      },
+      { $unwind: "$plant" },
+      {
+        $replaceRoot: {
+          newRoot: "$plant",
+        },
+      },
+    ]);
+
+    if (!topProducts || topProducts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy sản phẩm bán chạy nào.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Lấy danh sách sản phẩm bán chạy thành công.",
+      data: topProducts,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy top sản phẩm bán chạy:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi lấy dữ liệu.",
+    });
+  }
+};
+
 // [GET] /api/v1/plants/filter/:page/:category/:sort
 export const plantsFilter = async (req: Request, res: Response) => {
   try {
     const currentLimit = 6;
 
-    const { page, category, sort ,maxPrice,maxHeight,lighting} = req.query;
+    const { page, category, sort, maxPrice, maxHeight, lighting } = req.query;
 
-  
     const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
     const find = {};
     const sortVa = {};
@@ -140,23 +237,21 @@ export const plantsFilter = async (req: Request, res: Response) => {
     if (maxPrice) {
       find["price"] = { $lte: parseInt(maxPrice as string) };
     }
-    if (lighting == 'anhsangmanh') {
+    if (lighting == "anhsangmanh") {
       find["care_instructions.lighting"] = { $regex: "mạnh", $options: "i" };
-    }
-    else if (lighting == 'anhsangyeu') {
+    } else if (lighting == "anhsangyeu") {
       find["care_instructions.lighting"] = { $regex: "tán xạ", $options: "i" };
+    } else if (lighting == "giantiep") {
+      find["care_instructions.lighting"] = {
+        $regex: "gián tiếp,",
+        $options: "i",
+      };
     }
-    else if (lighting == 'giantiep') {
-      find["care_instructions.lighting"] = { $regex: "gián tiếp,", $options: "i" };
-    }
-
-
-
 
     let data = await Plant.find(find);
 
-    if(maxHeight){
-      const filteredData = data.filter(p => {
+    if (maxHeight) {
+      const filteredData = data.filter((p) => {
         const numbers = p.specifications.height?.match(/\d+/g);
         const maxInText = numbers ? Math.max(...numbers.map(Number)) : 0;
         return maxInText <= parseInt(maxHeight as string);
@@ -167,8 +262,7 @@ export const plantsFilter = async (req: Request, res: Response) => {
     const pagination = paginationHelper(
       parseInt(page as string) || 1,
       currentLimit,
-      data.length,
-
+      data.length
     );
 
     const plants = await Plant.find(find)
@@ -176,14 +270,11 @@ export const plantsFilter = async (req: Request, res: Response) => {
       .skip(pagination.skip)
       .limit(currentLimit);
 
-
-
-
     res.status(201).json({
       success: true,
       data: plants,
       pagination: pagination,
-      find : find
+      find: find,
     });
   } catch (error) {
     res.status(500).json({

@@ -343,3 +343,48 @@ export const getTopSellingProducts = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch top selling statistics" });
   }
 };
+
+export const getTrendingPlants = async (req: Request, res: Response) => {
+  try {
+    const trending = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.productId",
+          totalSold: { $sum: "$orderItems.quantity" },
+        },
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 5 }, 
+      {
+        $lookup: {
+          from: "plants", 
+          localField: "_id",
+          foreignField: "_id",
+          as: "plant",
+        },
+      },
+      { $unwind: "$plant" },
+      {
+        $project: {
+          _id: 0,
+          id: "$plant._id",
+          sku: "$plant.sku",
+          title: "$plant.title",
+          content: "$plant.short_description",
+          image: { $arrayElemAt: ["$plant.images", 0] },
+          price: "$plant.price",
+          totalSold: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: trending,
+    });
+  } catch (error) {
+    console.error("Trending plant error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};

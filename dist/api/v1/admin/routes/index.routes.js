@@ -10,6 +10,6 @@ const mainV1AdminRoutes = (app) => {
     app.use(version + "", user_route_1.userRoutes);
     app.use(version + "/product", auth_middleware_1.requireAdminAuth, product_routes_1.productRoutes);
     app.use(version + "/category", auth_middleware_1.requireAdminAuth, category_routes_1.categoriesRouter);
-    app.use(version + "/statistic", auth_middleware_1.requireAdminAuth, statistic_routes_1.statisticRoutes);
+    app.use(version + "/statistic", statistic_routes_1.statisticRoutes);
 };
 exports.default = mainV1AdminRoutes;
