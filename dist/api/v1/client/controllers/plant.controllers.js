@@ -219,7 +219,7 @@ const plantsFilter = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const currentLimit = 6;
         const { keyword, page, category, sort, maxPrice, maxHeight, lighting } = req.query;
         const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
-        const find = {};
+        const find = { deleted: false };
         const sortVa = {};
         if (keyword) {
             const keywords = keyword.split(/\++/).join(" ");

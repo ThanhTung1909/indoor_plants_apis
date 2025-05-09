@@ -229,7 +229,9 @@ export const plantsFilter = async (req: Request, res: Response) => {
 
 
     const [key, value] = typeof sort === "string" ? sort.split("-") : ["", ""];
+
     const find = {delete : false};
+
     const sortVa = {};
 
 

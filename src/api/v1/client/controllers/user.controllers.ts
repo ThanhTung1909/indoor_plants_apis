@@ -229,7 +229,7 @@ export const myFavourite = async (req: RequestWithUser, res: Response) => {
     )) as { myFavouriteTree: string[] };
     let data = [];
     if (user && user.myFavouriteTree) {
-      data = await Plans.find({ id: { $in: user.myFavouriteTree } });
+      data = await Plans.find({ id: { $in: user.myFavouriteTree }, deleted: false });
     }
     res.status(200).json({
       success: true,

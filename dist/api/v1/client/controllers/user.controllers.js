@@ -225,7 +225,7 @@ const myFavourite = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const user = (yield user_model_1.default.findOne({ id: userId }).select("myFavouriteTree"));
         let data = [];
         if (user && user.myFavouriteTree) {
-            data = yield plant_model_1.default.find({ id: { $in: user.myFavouriteTree } });
+            data = yield plant_model_1.default.find({ id: { $in: user.myFavouriteTree }, deleted: false });
         }
         res.status(200).json({
             success: true,
