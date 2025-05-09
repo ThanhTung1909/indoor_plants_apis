@@ -36,7 +36,7 @@ export const getPlantOrderSummary = async (
                 $gte: startOfDay(day),
                 $lte: endOfDay(day),
               },
-              "orderItems.plantId": plant._id,
+              "orderorderItems.plantId": plant._id,
             });
 
             const totalQuantity = orders.reduce((sum, order) => {
@@ -285,5 +285,61 @@ export const getOverview = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error in getOverviewStatistics:", error);
     res.status(500).json({ message: "Failed to fetch overview statistics" });
+  }
+};
+
+export const getTopSellingProducts = async (req, res) => {
+  try {
+    const topProducts = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.productId",
+          soldCount: { $sum: "$orderItems.quantity" },
+        },
+      },
+      { $sort: { soldCount: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "plants",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo",
+        },
+      },
+      { $unwind: "$productInfo" },
+      {
+        $project: {
+          _id: 0,
+          name: "$productInfo.title",
+          image: { $arrayElemAt: ["$productInfo.images", 0] },
+          rank: { $literal: null },
+          soldCount: 1,
+        },
+      },
+    ]);
+    if (!topProducts) {
+      return res.status(404).json({
+        success: false,
+        message: "Lấy top sản phẩm thất bại",
+      });
+    }
+
+    const ranked = topProducts.map((p, i) => ({ ...p, rank: i + 1 }));
+    if (!ranked) {
+      return res.status(404).json({
+        success: false,
+        message: "Lấy top sản phẩm thất bại",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Lấy thông tin top seelling thành công",
+      data: ranked,
+    });
+  } catch (error) {
+    console.error("Error in getOverviewStatistics:", error);
+    res.status(500).json({ message: "Failed to fetch top selling statistics" });
   }
 };

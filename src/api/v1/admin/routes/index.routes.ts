@@ -11,7 +11,7 @@ const mainV1AdminRoutes = (app: Express) => {
   app.use(version + "", userRoutes);
   app.use(version + "/product", requireAdminAuth, productRoutes);
   app.use(version + "/category", requireAdminAuth, categoriesRouter);
-  app.use(version + "/statistic", statisticRoutes);
+  app.use(version + "/statistic",requireAdminAuth, statisticRoutes);
 };
 
 export default mainV1AdminRoutes;

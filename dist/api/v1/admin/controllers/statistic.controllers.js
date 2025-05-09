@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOverview = exports.getRecentUserActivities = exports.getOrderStatus = exports.getPlantOrderSummary = void 0;
+exports.getTopSellingProducts = exports.getOverview = exports.getRecentUserActivities = exports.getOrderStatus = exports.getPlantOrderSummary = void 0;
 const plant_model_1 = __importDefault(require("../../../../models/plant.model"));
 const order_model_1 = __importDefault(require("../../../../models/order.model"));
 const date_fns_1 = require("date-fns");
@@ -31,7 +31,7 @@ const getPlantOrderSummary = (req, res, next) => __awaiter(void 0, void 0, void 
                         $gte: (0, date_fns_1.startOfDay)(day),
                         $lte: (0, date_fns_1.endOfDay)(day),
                     },
-                    "orderItems.plantId": plant._id,
+                    "orderorderItems.plantId": plant._id,
                 });
                 const totalQuantity = orders.reduce((sum, order) => {
                     const matchingItems = order.orderItems.filter((i) => i.productId.toString() === plant._id.toString());
@@ -222,3 +222,59 @@ const getOverview = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getOverview = getOverview;
+const getTopSellingProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const topProducts = yield order_model_1.default.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $group: {
+                    _id: "$orderItems.productId",
+                    soldCount: { $sum: "$orderItems.quantity" },
+                },
+            },
+            { $sort: { soldCount: -1 } },
+            { $limit: 5 },
+            {
+                $lookup: {
+                    from: "plants",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productInfo",
+                },
+            },
+            { $unwind: "$productInfo" },
+            {
+                $project: {
+                    _id: 0,
+                    name: "$productInfo.title",
+                    image: { $arrayElemAt: ["$productInfo.images", 0] },
+                    rank: { $literal: null },
+                    soldCount: 1,
+                },
+            },
+        ]);
+        if (!topProducts) {
+            return res.status(404).json({
+                success: false,
+                message: "Lấy top sản phẩm thất bại",
+            });
+        }
+        const ranked = topProducts.map((p, i) => (Object.assign(Object.assign({}, p), { rank: i + 1 })));
+        if (!ranked) {
+            return res.status(404).json({
+                success: false,
+                message: "Lấy top sản phẩm thất bại",
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Lấy thông tin top seelling thành công",
+            data: ranked,
+        });
+    }
+    catch (error) {
+        console.error("Error in getOverviewStatistics:", error);
+        res.status(500).json({ message: "Failed to fetch top selling statistics" });
+    }
+});
+exports.getTopSellingProducts = getTopSellingProducts;
