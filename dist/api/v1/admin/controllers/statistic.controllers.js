@@ -23,7 +23,7 @@ const getPlantOrderSummary = (req, res, next) => __awaiter(void 0, void 0, void 
         const today = new Date();
         const days = Array.from({ length: 7 }).map((_, i) => (0, date_fns_1.subDays)(today, 6 - i));
         const formattedDates = days.map((d) => (0, date_fns_1.format)(d, "dd/MM/yy"));
-        const plants = yield plant_model_1.default.find();
+        const plants = yield plant_model_1.default.find({ deleted: false });
         const summary = yield Promise.all(plants.map((plant) => __awaiter(void 0, void 0, void 0, function* () {
             const dailyOrders = yield Promise.all(days.map((day) => __awaiter(void 0, void 0, void 0, function* () {
                 const orders = yield order_model_1.default.find({

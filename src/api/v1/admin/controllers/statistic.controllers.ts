@@ -25,7 +25,7 @@ export const getPlantOrderSummary = async (
     const days = Array.from({ length: 7 }).map((_, i) => subDays(today, 6 - i));
     const formattedDates = days.map((d) => format(d, "dd/MM/yy"));
 
-    const plants = await Plant.find();
+    const plants = await Plant.find({deleted:false});
 
     const summary = await Promise.all(
       plants.map(async (plant) => {
