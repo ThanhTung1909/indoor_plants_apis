@@ -156,7 +156,7 @@ const deleteProductBySku = (req, res, next) => __awaiter(void 0, void 0, void 0,
 exports.deleteProductBySku = deleteProductBySku;
 const getAllProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const plants = yield plant_model_1.default.find({ deleted: { $ne: true } }).populate("category");
+        const plants = yield plant_model_1.default.find({ deleted: false }).populate("category");
         if (!plants || plants.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -178,7 +178,7 @@ exports.getAllProduct = getAllProduct;
 const getDetailBySku = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sku = req.params;
-        const plant = yield plant_model_1.default.findOne({ sku, deleted: { $ne: true } });
+        const plant = yield plant_model_1.default.findOne({ sku: sku, deleted: false });
         if (!plant) {
             return res.status(404).json({
                 success: false,

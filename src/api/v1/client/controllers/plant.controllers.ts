@@ -14,7 +14,7 @@ interface RequestWithUser extends Request {
 
 export const index = async (req: RequestWithUser, res: Response) => {
   try {
-    const plants = await Plant.find();
+    const plants = await Plant.find({ deleted: false });
 
     res.status(200).json({
       success: true,
@@ -35,7 +35,7 @@ export const getPlantsByCategory = async (req: Request, res: Response) => {
   try {
     const { categoryId } = req.params;
 
-    const plants = await Plant.find({ category: categoryId });
+    const plants = await Plant.find({ category: categoryId, deleted: false });
 
     res.status(201).json({
       success: true,
@@ -56,7 +56,7 @@ export const getPlantDetail = async (req: Request, res: Response) => {
   try {
     const { sku } = req.params;
 
-    const plant = await Plant.findOne({ sku: sku });
+    const plant = await Plant.findOne({ sku: sku, deleted: false });
 
     res.status(201).json({
       success: true,
@@ -104,7 +104,7 @@ export const getPlantsByLimit = async (req: Request, res: Response) => {
       });
     }
 
-    const plants = await Plant.find().limit(limitNumber);
+    const plants = await Plant.find({ deleted: false }).limit(limitNumber);
 
     res.status(201).json({
       success: true,
@@ -142,6 +142,7 @@ export const getTrendingPlants = async (req: Request, res: Response) => {
         },
       },
       { $unwind: "$plant" },
+      { $match: { "plant.deleted": false } },
       {
         $project: {
           _id: 0,
@@ -188,6 +189,7 @@ export const getTopSellingProducts = async (req: Request, res: Response) => {
         },
       },
       { $unwind: "$plant" },
+      { $match: { "plant.deleted": false } },
       {
         $replaceRoot: {
           newRoot: "$plant",

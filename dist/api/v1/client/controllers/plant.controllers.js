@@ -21,7 +21,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const order_model_1 = __importDefault(require("../../../../models/order.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const plants = yield plant_model_1.default.find();
+        const plants = yield plant_model_1.default.find({ deleted: false });
         res.status(200).json({
             success: true,
             data: plants,
@@ -39,7 +39,7 @@ exports.index = index;
 const getPlantsByCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { categoryId } = req.params;
-        const plants = yield plant_model_1.default.find({ category: categoryId });
+        const plants = yield plant_model_1.default.find({ category: categoryId, deleted: false });
         res.status(201).json({
             success: true,
             message: "Get Plants By Category SuccessFully",
@@ -58,7 +58,7 @@ exports.getPlantsByCategory = getPlantsByCategory;
 const getPlantDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { sku } = req.params;
-        const plant = yield plant_model_1.default.findOne({ sku: sku });
+        const plant = yield plant_model_1.default.findOne({ sku: sku, deleted: false });
         res.status(201).json({
             success: true,
             message: "Get Plant SuccessFully",
@@ -102,7 +102,7 @@ const getPlantsByLimit = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 message: "Limit must be a positive number",
             });
         }
-        const plants = yield plant_model_1.default.find().limit(limitNumber);
+        const plants = yield plant_model_1.default.find({ deleted: false }).limit(limitNumber);
         res.status(201).json({
             success: true,
             message: "Get Plants SuccessFully",
@@ -139,6 +139,7 @@ const getTrendingPlants = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 },
             },
             { $unwind: "$plant" },
+            { $match: { "plant.deleted": false } },
             {
                 $project: {
                     _id: 0,
@@ -184,6 +185,7 @@ const getTopSellingProducts = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
             { $unwind: "$plant" },
+            { $match: { "plant.deleted": false } },
             {
                 $replaceRoot: {
                     newRoot: "$plant",

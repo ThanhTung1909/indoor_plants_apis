@@ -168,9 +168,7 @@ export const deleteProductBySku = async (req: Request, res: Response, next) => {
 // [GET] /api/v1/admin/product
 export const getAllProduct = async (req: Request, res: Response, next) => {
   try {
-    const plants = await Plant.find({ deleted: { $ne: true } }).populate(
-      "category"
-    );
+    const plants = await Plant.find({ deleted: false }).populate("category");
 
     if (!plants || plants.length === 0) {
       return res.status(404).json({
@@ -195,7 +193,7 @@ export const getDetailBySku = async (req: Request, res: Response, next) => {
   try {
     const sku = req.params;
 
-    const plant = await Plant.findOne({ sku, deleted: { $ne: true } });
+    const plant = await Plant.findOne({ sku: sku, deleted: false });
     if (!plant) {
       return res.status(404).json({
         success: false,
