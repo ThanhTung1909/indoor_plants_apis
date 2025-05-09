@@ -19,25 +19,25 @@ interface IBlog extends Document {
 }
 
 const BlogSchema: Schema = new Schema({
-  title: { type: String, require: true },
-  content: { type: String, require: true },
-  summary: { type: String, require: true },
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  summary: { type: String, required: true },
   image: { type: String },
   posting_date: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
   blog_category: {
     type: Schema.Types.ObjectId,
     ref: "BlogCategory",
-    require: true,
+    required: true,
   },
   sections: [
     {
-      title: { type: String, require: true },
-      content: { type: String, require: true },
+      title: { type: String, required: true },
+      content: { type: String, required: true },
       subSections: [
         {
-          title: { type: String, require: true },
-          content: { type: String, require: true },
+          title: { type: String, required: true },
+          content: { type: String, required: true },
         },
       ],
     },
